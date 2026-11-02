@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3a4a35">
+<meta name="description" content="Wizualny planer dla jednego pomieszczenia, z prawdziwymi etapami (przygotowanie, suszenie, wykończenie) i inteligentnym harmonogramem na sobotę i niedzielę.">
+<title>Planer Twojego Weekendu — Remont Rozwiązany</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+:root{
+  --ink:#2f362b;--muted:#6f7763;--bg:#f7f4ea;--paper:#fffefc;--line:#e4e0ce;
+  --sage:#6f8761;--sage-soft:#e7ebe0;--dark:#3a4a35;--radius:18px;
+  --terra:#b5633c;--terra-soft:#f3e2d6;
+  --good:#5b7a5e;--good-soft:#e7eee6;--warn:#a65d3a;--warn-soft:#f5e3d6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--dark);line-height:1.15}
+.serif-em{font-style:italic}
+p{margin:0}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:640px;margin:0 auto;padding:0 18px}
+
+header.top{position:relative;background:linear-gradient(165deg,var(--dark),#28331f);color:#fff;padding:0;overflow:hidden}
+header.top .photo{width:100%;height:150px;object-fit:cover;display:block;opacity:.55;filter:saturate(1.05)}
+header.top .photo-fallback{width:100%;height:150px;background:linear-gradient(135deg,#4c5c42,#2c3826)}
+header.top .content{padding:18px 18px 24px;text-align:center;margin-top:-54px;position:relative}
+header.top .kicker{font-family:'Manrope',sans-serif;font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--terra-soft);opacity:.9}
+header.top h1{font-size:24px;color:#fff;margin:8px 0 6px}
+header.top p{font-size:13.5px;color:#e4e8df;max-width:36ch;margin:0 auto}
+
+nav.nav{display:flex;gap:6px;overflow-x:auto;padding:14px 18px 0;max-width:640px;margin:0 auto;scrollbar-width:none}
+nav.nav::-webkit-scrollbar{display:none}
+nav.nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);color:var(--muted);font-weight:600;font-size:12.5px;padding:9px 13px;border-radius:100px;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s ease}
+nav.nav button .step-no{width:18px;height:18px;border-radius:50%;background:var(--sage-soft);color:var(--sage);font-size:11px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
+nav.nav button.active{background:var(--sage);color:#fff;border-color:var(--sage)}
+nav.nav button.active .step-no{background:rgba(255,255,255,.25);color:#fff}
+
+main{padding:20px 0 0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 10px 30px -18px rgba(47,54,43,.16)}
+.card h2{font-size:18px;margin-bottom:6px}
+.card .hint{color:var(--muted);font-size:13px;margin-bottom:14px}
+
+.room-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.room-chip{border:1.5px solid var(--line);background:var(--bg);border-radius:14px;padding:12px 10px;text-align:center;font-weight:600;font-size:13.5px;color:var(--ink)}
+.room-chip.on{border-color:var(--sage);background:var(--sage-soft);color:var(--dark)}
+
+.xform-card{border:1.5px solid var(--line);border-radius:14px;padding:12px 13px;margin-top:10px;background:var(--bg)}
+.xform-card.on{border-color:var(--sage);background:#fff}
+.xform-card>label{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:700;font-size:14px}
+.xform-card input[type=checkbox]{width:19px;height:19px;accent-color:var(--sage);flex:0 0 auto}
+.xform-meta{color:var(--muted);font-size:12px;margin:4px 0 0 29px}
+.phase-edit{margin:10px 0 0 29px;display:flex;flex-direction:column;gap:6px}
+.phase-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.phase-row .p-icon{width:20px;text-align:center}
+.phase-row .p-label{flex:1;color:var(--muted)}
+.phase-row input[type=number]{width:60px;border:1px solid var(--line);border-radius:7px;padding:5px 6px;font-size:12.5px;text-align:right}
+.phase-row .p-unit{color:var(--muted);font-size:11px;width:24px}
+
+.config-row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:10px}
+.config-row label{font-size:13px;font-weight:600;flex:1}
+.config-row input[type=number]{width:70px;border:1px solid var(--line);border-radius:8px;padding:7px 8px;font-size:14px;text-align:right;background:#fff}
+.people-toggle{display:flex;gap:8px}
+.people-toggle button{flex:1;border:1.5px solid var(--line);background:#fff;color:var(--muted);font-weight:700;padding:8px;border-radius:10px;font-size:13px}
+.people-toggle button.on{background:var(--sage);color:#fff;border-color:var(--sage)}
+
+.result-hero{background:linear-gradient(165deg,var(--dark),#28331f);color:#fff;border-radius:var(--radius);padding:22px 20px;text-align:center;margin-bottom:14px}
+.result-hero .kicker{font-family:'Manrope',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--terra-soft);opacity:.9}
+.result-hero .big{font-family:'Playfair Display',serif;font-weight:700;font-size:30px;margin:8px 0 10px;color:#fff;line-height:1.15}
+.progress-bar{height:9px;border-radius:100px;background:rgba(255,255,255,.16);overflow:hidden;margin-bottom:6px}
+.progress-bar i{display:block;height:100%;background:linear-gradient(90deg,#8fae7e,#c7d9ba);border-radius:100px}
+.result-hero .sub{font-size:12.5px;color:#d7ddcc}
+
+.day-block{margin-bottom:16px}
+.day-block h3{font-size:17px;margin-bottom:2px}
+.day-block .day-sub{color:var(--muted);font-size:12px;margin-bottom:10px}
+.tl{position:relative;padding-left:26px}
+.tl::before{content:'';position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl-phase{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.tl-phase::before{content:'';position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--sage);border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.tl-phase.suszenie{background:repeating-linear-gradient(135deg,var(--terra-soft),var(--terra-soft) 8px,#fff 8px,#fff 16px);border:1px dashed var(--terra)}
+.tl-phase.suszenie::before{background:var(--terra)}
+.tl-phase.done{opacity:.55}
+.tl-phase.done .tl-name{text-decoration:line-through}
+.tl-head{display:flex;align-items:center;gap:8px}
+.tl-head input[type=checkbox]{width:18px;height:18px;accent-color:var(--good);flex:0 0 auto}
+.tl-wait-badge{font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--terra);border-radius:100px;padding:3px 9px;flex:0 0 auto}
+.tl-time{font-family:'Manrope',sans-serif;font-weight:700;font-size:11.5px;color:var(--sage);white-space:nowrap}
+.tl-phase.suszenie .tl-time{color:var(--terra)}
+.tl-name{flex:1;font-size:13.5px;font-weight:600}
+.tl-xform{color:var(--muted);font-size:11px;margin:2px 0 0 26px}
+.tl-track{font-size:10.5px;font-weight:700;color:#fff;background:var(--sage);border-radius:100px;padding:2px 8px;flex:0 0 auto}
+
+.carryover-box{background:var(--terra-soft);border-radius:12px;padding:12px 14px;margin-top:10px}
+.carryover-box b{color:var(--terra)}
+.carryover-box ul{margin:8px 0 0;padding-left:18px;font-size:12.5px;line-height:1.6}
+
+.materials-cat{font-family:'Manrope',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sage);margin:14px 0 6px}
+.materials-cat:first-child{margin-top:0}
+.mat-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}
+.mat-item:first-of-type{border-top:0}
+.mat-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--sage);flex:0 0 auto}
+
+.empty{text-align:center;color:var(--muted);font-size:14px;padding:30px 10px}
+.actions{display:flex;gap:10px;margin-top:4px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;flex:1;padding:14px 16px;border-radius:12px;border:0;font-weight:700;font-size:14.5px}
+.btn-primary{background:var(--sage);color:#fff}
+.btn-ghost{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+
+.disclaimer{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+.save-status{font-size:11px;color:var(--muted);text-align:center;margin-top:16px}
+
+@media print{
+  nav.nav,.actions{display:none}
+  body{background:#fff}
+  .card,.result-hero{box-shadow:none;border:1px solid #ddd}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div id="header-photo"></div>
+  <div class="content">
+    <span class="kicker">✦ Tylko dla osób, które już kupiły ✦</span>
+    <h1>Planer <span class="serif-em">Twojego Weekendu</span></h1>
+    <p>Twoja osobista organizatorka: co robisz, kiedy, i jak posuwasz się do przodu bez tracenia czasu.</p>
+  </div>
+</header>
+
+<nav class="nav" id="nav"></nav>
+<main class="wrap" id="main"></main>
+
+<script>
+/* Etapy i czasy aktywne to orientacyjne szacunki zwykłego tempa pracy DIY —
+   edytowalne przez użytkowniczkę. Czasy suszenia to typowe zalecenia
+   produktowe (farba, klej, silikon) — różnią się realnie zależnie od marki
+   i warunków (temperatura, wilgotność); użytkowniczka może je dostosować. */
+window.PLAN_DATA = {
+  headerPhoto: null, // sin foto propia subida aún para Polonia — usa el degradado de respaldo
+  rooms: [
+    { id:'kuchnia', label:'Kuchnia' },
+    { id:'lazienka', label:'Łazienka' },
+    { id:'sypialnia', label:'Sypialnia' },
+    { id:'salon', label:'Salon' },
+    { id:'przedpokoj', label:'Przedpokój / Hol' },
+    { id:'biuro', label:'Biuro' }
+  ],
+  // surface = jaką fizyczną powierzchnię zajmuje zmiana. Dwie wybrane zmiany
+  // na tej samej powierzchni NIE są zakładane jako zgodne jednocześnie — tylko
+  // ostrzegamy użytkowniczkę (nie wymyślamy, że się da), a planer trzyma je
+  // zawsze na tym samym torze (ta sama osoba), nigdy równolegle.
+  xforms: [
+    { id:'malowanie-sciana', label:'Malowanie jednej ściany', rooms:['kuchnia','lazienka','sypialnia','salon','przedpokoj','biuro'], surface:'sciana',
+      materials:['Farba lateksowa','Wałek + pędzel','Folia ochronna','Taśma malarska'],
+      phases:[
+        { id:'przygotowanie', type:'aktywny', label:'Przygotowanie powierzchni (ochrona, czyszczenie)', min:30 },
+        { id:'warstwa1', type:'aktywny', label:'Pierwsza warstwa farby', min:60 },
+        { id:'susz1', type:'suszenie', label:'Suszenie pierwszej warstwy', min:120 },
+        { id:'warstwa2', type:'aktywny', label:'Druga warstwa farby', min:60 },
+        { id:'suszf', type:'suszenie', label:'Suszenie końcowe', min:60 },
+        { id:'porzadki', type:'aktywny', label:'Porządki', min:15 }
+      ]},
+    { id:'malowanie-pokoj', label:'Malowanie całego pokoju', rooms:['kuchnia','lazienka','sypialnia','salon','przedpokoj','biuro'], surface:'sciana',
+      materials:['Farba lateksowa (większa ilość)','Wałek + pędzel','Folia ochronna','Taśma malarska'],
+      phases:[
+        { id:'przygotowanie', type:'aktywny', label:'Przygotowanie powierzchni (ochrona, czyszczenie)', min:45 },
+        { id:'warstwa1', type:'aktywny', label:'Pierwsza warstwa farby', min:120 },
+        { id:'susz1', type:'suszenie', label:'Suszenie pierwszej warstwy', min:150 },
+        { id:'warstwa2', type:'aktywny', label:'Druga warstwa farby', min:120 },
+        { id:'suszf', type:'suszenie', label:'Suszenie końcowe', min:90 },
+        { id:'porzadki', type:'aktywny', label:'Porządki', min:25 }
+      ]},
+    { id:'montaz-plytek', label:'Montaż płytek / glazury', rooms:['kuchnia','lazienka'], surface:['sciana','podloga'],
+      materials:['Płytki/glazura','Klej','Fuga','Szpachelka zębata','Krzyżyki dystansowe'],
+      phases:[
+        { id:'przygotowanie', type:'aktywny', label:'Czyszczenie i gruntowanie powierzchni', min:45 },
+        { id:'suszA', type:'suszenie', label:'Suszenie gruntu', min:60 },
+        { id:'klejenie', type:'aktywny', label:'Klejenie płytek', min:180 },
+        { id:'suszAd', type:'suszenie', label:'Suszenie kleju (nie wchodzić/dotykać)', min:1440 },
+        { id:'fuga', type:'aktywny', label:'Fugowanie', min:60 },
+        { id:'suszC', type:'suszenie', label:'Suszenie fugi', min:120 },
+        { id:'porzadki', type:'aktywny', label:'Porządki', min:20 }
+      ]},
+    { id:'podloga-panele', label:'Montaż paneli laminowanych', rooms:['kuchnia','sypialnia','salon','przedpokoj'], surface:'podloga',
+      materials:['Panele laminowane','Folia izolacyjna','Listwy przypodłogowe'],
+      phases:[
+        { id:'przygotowanie', type:'aktywny', label:'Przygotowanie i folia izolacyjna', min:30 },
+        { id:'montaz', type:'aktywny', label:'Montaż podłogi', min:180 },
+        { id:'porzadki', type:'aktywny', label:'Porządki', min:20 }
+      ]},
+    { id:'folia-meble', label:'Folia samoprzylepna na fronty', rooms:['kuchnia','salon','biuro'], surface:'fronty-mebli',
+      materials:['Folia samoprzylepna','Nożyk','Rakla'],
+      phases:[
+        { id:'przygotowanie', type:'aktywny', label:'Czyszczenie powierzchni frontów', min:20 },
+        { id:'aplikacja', type:'aktywny', label:'Aplikacja folii samoprzylepnej', min:70 },
+        { id:'porzadki', type:'aktywny', label:'Porządki', min:10 }
+      ]},
+    { id:'meble', label:'Montaż nowych mebli', rooms:['kuchnia','lazienka','sypialnia','salon','przedpokoj','biuro'],
+      materials:['Elementy meblowe (zestaw)','Wkrętarka/wiertarka','Poziomica'],
+      phases:[
+        { id:'przygotowanie', type:'aktywny', label:'Organizacja elementów i instrukcji', min:15 },
+        { id:'montaz', type:'aktywny', label:'Montaż', min:90 },
+        { id:'mocowanie', type:'aktywny', label:'Mocowanie/kotwienie do ściany', min:30 },
+        { id:'porzadki', type:'aktywny', label:'Porządki', min:10 }
+      ]},
+    { id:'silikon', label:'Wymiana silikonu sanitarnego', rooms:['lazienka','kuchnia'], surface:['sciana','podloga'],
+      materials:['Silikon sanitarny','Pistolet do silikonu','Alkohol do odtłuszczania'],
+      phases:[
+        { id:'przygotowanie', type:'aktywny', label:'Usunięcie starego silikonu', min:20 },
+        { id:'aplikacja', type:'aktywny', label:'Aplikacja nowego silikonu', min:20 },
+        { id:'suszenie', type:'suszenie', label:'Suszenie (unikać wody w tym miejscu)', min:1440 },
+        { id:'porzadki', type:'aktywny', label:'Porządki', min:5 }
+      ]},
+    { id:'polki', label:'Montaż półek/regałów', rooms:['kuchnia','lazienka','sypialnia','salon','przedpokoj','biuro'], surface:'sciana',
+      materials:['Półki/regały','Kołki + wkręty','Wiertarka','Poziomica'],
+      phases:[
+        { id:'przygotowanie', type:'aktywny', label:'Pomiar i zaznaczenie', min:15 },
+        { id:'montaz', type:'aktywny', label:'Montaż półek', min:45 },
+        { id:'porzadki', type:'aktywny', label:'Porządki', min:10 }
+      ]}
+  ]
+};
+</script>
+
+<script>
+(() => {
+'use strict';
+const DATA = window.PLAN_DATA;
+const KEY = 'remont-rozwiazany:planer-weekendu:v1';
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = (v, def) => { const n = parseFloat(v); return isFinite(n) && n>=0 ? n : def; };
+const MAX_DAY_HOURS = 12;
+const clampHours = v => Math.min(MAX_DAY_HOURS, Math.max(0, v));
+function iconFor(phase, idx, arr){
+  if (phase.type==='suszenie') return '⏳';
+  if (phase.id==='porzadki') return '🧹';
+  if (idx===0) return '🧰';
+  if (idx===arr.length-1 || /fuga|warstwa2|suszf|mocowanie/.test(phase.id)) return '✨';
+  return '🔧';
+}
+function toHHMM(absMin){
+  const dayMin = ((absMin % 1440) + 1440) % 1440;
+  const h = Math.floor(dayMin/60), m = dayMin%60;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+function fmtDur(min){ return min>=60 ? (Math.round(min/60*10)/10)+' godz.' : min+' min'; }
+
+function initial(){
+  return { tab:'pomieszczenie', room:null, selected:{}, satHours:6, sunHours:6, people:1, phaseMin:{}, done:{}, matBought:{} };
+}
+let state = initial(), storageOK = true;
+
+function phaseMin(xform, phase){
+  const key = xform.id+'|'+phase.id;
+  return state.phaseMin[key] !== undefined ? state.phaseMin[key] : phase.min;
+}
+function doneKey(xform, phase){ return state.room+'|'+xform.id+'|'+phase.id; }
+function matKey(xform, idx){ return state.room+'|'+xform.id+'|'+idx; }
+
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); storageOK = true; }
+  catch(_) { storageOK = false; }
+  document.querySelectorAll('[data-save]').forEach(el => el.textContent = saveText());
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (!parsed) return;
+    const room = DATA.rooms.find(r => r.id === parsed.room);
+    state.room = room ? room.id : null;
+    const sel = {};
+    if (parsed.selected && typeof parsed.selected === 'object') {
+      Object.keys(parsed.selected).forEach(id => {
+        const x = DATA.xforms.find(x => x.id === id);
+        if (x && parsed.selected[id] === true && state.room && x.rooms.includes(state.room)) sel[id] = true;
+      });
+    }
+    state.selected = sel;
+    state.satHours = clampHours(num(parsed.satHours, 6));
+    state.sunHours = clampHours(num(parsed.sunHours, 6));
+    state.people = [1,2].includes(parsed.people) ? parsed.people : 1;
+    state.phaseMin = (parsed.phaseMin && typeof parsed.phaseMin === 'object') ? parsed.phaseMin : {};
+    state.done = (parsed.done && typeof parsed.done === 'object') ? parsed.done : {};
+    state.matBought = (parsed.matBought && typeof parsed.matBought === 'object') ? parsed.matBought : {};
+    if (['pomieszczenie','harmonogram','materialy'].includes(parsed.tab)) state.tab = parsed.tab;
+  } catch(_) { storageOK = false; }
+}
+const saveText = () => storageOK
+  ? 'Zapisano automatycznie na tym urządzeniu.'
+  : 'Zapis lokalny nie jest dostępny w tej przeglądarce — wybory zostaną utracone po zamknięciu.';
+
+/* ---- scheduler: etapy aktywne + suszenie, 1-2 osoby (tory), 2 okna czasowe
+   (sobota/niedziela) z DOKŁADNĄ długością podaną przez użytkowniczkę — żadna
+   dostępność nie jest wymyślona. ---- */
+function buildPlan(){
+  const xforms = DATA.xforms.filter(x => state.selected[x.id]);
+  if (!xforms.length) return null;
+
+  const totalActiv = x => x.phases.filter(p=>p.type==='aktywny').reduce((s,p)=>s+phaseMin(x,p),0);
+  const surfacesOf = x => x.surface ? (Array.isArray(x.surface)?x.surface:[x.surface]) : [];
+  const groups = [];
+  xforms.forEach(x => {
+    const xSurf = surfacesOf(x);
+    const existing = xSurf.length ? groups.find(g => g.items.some(gx => surfacesOf(gx).some(s => xSurf.includes(s)))) : null;
+    if (existing) { existing.items.push(x); existing.load += totalActiv(x); }
+    else groups.push({ items:[x], load: totalActiv(x) });
+  });
+  groups.sort((a,b) => b.load-a.load);
+  const trackCount = state.people===2 ? 2 : 1;
+  const tracks = Array.from({length:trackCount}, () => ({ items:[], load:0, surfaceBusy:{} }));
+  groups.forEach(g => {
+    const t = tracks.reduce((min,t) => t.load<min.load ? t : min, tracks[0]);
+    g.items.forEach(x => t.items.push({ x, phaseIdx:0, readyAt:0, placed:[] }));
+    t.load += g.load;
+  });
+
+  const DAY_START_HOUR = 9;
+  const satStart=DAY_START_HOUR*60, satEnd=satStart+state.satHours*60;
+  const sunStart=1440+DAY_START_HOUR*60, sunEnd=sunStart+state.sunHours*60;
+  const windows = [[satStart,satEnd,'Sobota'],[sunStart,sunEnd,'Niedziela']];
+
+  tracks.forEach(track => {
+    windows.forEach(([wStart,wEnd]) => {
+      let cursor = wStart;
+      let progressed = true;
+      while (cursor < wEnd && progressed) {
+        progressed = false;
+        track.items.forEach(it => {
+          while (it.phaseIdx < it.x.phases.length && it.x.phases[it.phaseIdx].type==='suszenie') {
+            const ph = it.x.phases[it.phaseIdx];
+            const dur = phaseMin(it.x, ph);
+            it.placed.push({ phase:ph, x:it.x, start:it.readyAt, end:it.readyAt+dur, absolute:true });
+            it.readyAt = it.readyAt + dur;
+            surfacesOf(it.x).forEach(s => { track.surfaceBusy[s] = { until: it.readyAt, owner: it }; });
+            it.phaseIdx++;
+            progressed = true;
+          }
+        });
+        let best = null;
+        track.items.forEach(it => {
+          if (it.phaseIdx >= it.x.phases.length) return;
+          const ph = it.x.phases[it.phaseIdx];
+          if (ph.type !== 'aktywny') return;
+          const startAt = Math.max(cursor, it.readyAt);
+          const dur = phaseMin(it.x, ph);
+          if (startAt + dur > wEnd) return;
+          const blocked = surfacesOf(it.x).some(s => {
+            const busy = track.surfaceBusy[s];
+            return busy && busy.owner !== it && startAt < busy.until;
+          });
+          if (blocked) return;
+          if (!best || startAt < best.startAt) best = { it, ph, startAt, dur };
+        });
+        if (best) {
+          const { it, ph, startAt, dur } = best;
+          it.placed.push({ phase:ph, x:it.x, start:startAt, end:startAt+dur, absolute:false });
+          it.readyAt = startAt+dur;
+          it.phaseIdx++;
+          cursor = startAt+dur;
+          progressed = true;
+        }
+      }
+    });
+  });
+
+  const allPlaced = [];
+  tracks.forEach((track,ti) => track.items.forEach(it => it.placed.forEach(p => allPlaced.push({ ...p, track:ti }))));
+  allPlaced.sort((a,b) => a.start-b.start);
+
+  const days = [
+    { label:'Sobota', start:satStart, end:satEnd, items: allPlaced.filter(p=>p.start<satEnd && p.start>=satStart) },
+    { label:'Niedziela', start:sunStart, end:sunEnd, items: allPlaced.filter(p=>p.start>=sunStart && p.start<sunEnd) }
+  ];
+
+  const carryover = [];
+  tracks.forEach(track => track.items.forEach(it => {
+    if (it.phaseIdx < it.x.phases.length) {
+      const nextPh = it.x.phases[it.phaseIdx];
+      let reason;
+      if (nextPh.type==='suszenie') {
+        reason = `potrzebuje jeszcze ${fmtDur(phaseMin(it.x,nextPh))} suszenia przed kolejnym krokiem`;
+      } else if (it.readyAt >= sunEnd) {
+        reason = `poprzedni etap suszenia kończy się już po tym weekendzie — wróć do tego następnym razem`;
+      } else {
+        reason = `nie zmieściło się w dostępnych godzinach tego weekendu`;
+      }
+      carryover.push({ x: it.x, reason });
+    }
+  }));
+
+  const totalActivAll = xforms.reduce((s,x)=>s+totalActiv(x),0);
+  return { days, carryover, totalActivAll, xforms, trackCount };
+}
+
+const tabs = [['pomieszczenie','Twoje pomieszczenie'],['harmonogram','Twój harmonogram'],['materialy','Materiały']];
+function renderNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = tabs.map(([id,title],i) =>
+    `<button data-tab="${id}" class="${state.tab===id?'active':''}"><span class="step-no">${i+1}</span>${title}</button>`
+  ).join('');
+  nav.querySelectorAll('button').forEach(b => b.onclick = () => goTab(b.dataset.tab));
+}
+function goTab(id){ state.tab = id; save(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function surfaceConflicts(){
+  const xforms = DATA.xforms.filter(x => state.selected[x.id]);
+  const bySurf = {};
+  xforms.forEach(x => {
+    const surfs = x.surface ? (Array.isArray(x.surface)?x.surface:[x.surface]) : [];
+    surfs.forEach(s => { bySurf[s] = bySurf[s] || []; bySurf[s].push(x); });
+  });
+  return Object.entries(bySurf).filter(([,list]) => list.length>1);
+}
+const SURFACE_LABEL = { sciana:'ścianę', podloga:'podłogę', 'fronty-mebli':'fronty mebli' };
+
+function renderPomieszczenie(){
+  const roomXforms = state.room ? DATA.xforms.filter(x => x.rooms.includes(state.room)) : [];
+  const conflicts = state.room ? surfaceConflicts() : [];
+  return `<div class="card">
+    <h2>Który pokój remontujesz?</h2>
+    <p class="hint">Wybierz JEDEN pokój — plan jest pomyślany dla konkretnego projektu, nie dla całego domu naraz.</p>
+    <div class="room-grid">
+      ${DATA.rooms.map(r => `<button class="room-chip ${state.room===r.id?'on':''}" data-room="${r.id}">${esc(r.label)}</button>`).join('')}
+    </div>
+  </div>
+  ${state.room ? `<div class="card">
+    <h2>Co chcesz zmienić?</h2>
+    <p class="hint">Zaznacz jedną lub więcej — możesz edytować czas trwania każdego etapu (to szacunki, nie sztywne reguły).</p>
+    ${roomXforms.map(x => renderXformCard(x)).join('')}
+    ${conflicts.length ? `<div class="carryover-box" style="margin-top:12px">
+      <b>Uwaga, ta sama powierzchnia:</b>
+      <ul>${conflicts.map(([s,list]) => `<li>${list.map(x=>esc(x.label)).join(' + ')} obie zajmują ${esc(SURFACE_LABEL[s]||s)} — nie zakładamy, że można je zrobić jednocześnie; aplikacja trzyma je zawsze przy tej samej osobie, po kolei. Sprawdź sama, czy ta kolejność ma sens w Twoim projekcie.</li>`).join('')}</ul>
+    </div>` : ''}
+  </div>
+  <div class="card">
+    <h2>Ile masz czasu</h2>
+    <div class="config-row"><label>Dostępne godziny w sobotę</label><input type="number" min="0" max="12" step="0.5" id="sat-hours" value="${state.satHours}"></div>
+    <div class="config-row"><label>Dostępne godziny w niedzielę</label><input type="number" min="0" max="12" step="0.5" id="sun-hours" value="${state.sunHours}"></div>
+    <div class="config-row"><label>Ile osób pracuje</label>
+      <div class="people-toggle"><button data-people="1" class="${state.people===1?'on':''}">1 osoba</button><button data-people="2" class="${state.people===2?'on':''}">2 osoby</button></div>
+    </div>
+  </div>
+  <div class="actions"><button class="btn btn-primary" data-go-harmonogram>Zobacz mój harmonogram →</button></div>` : ''}`;
+}
+
+function renderXformCard(x){
+  const on = !!state.selected[x.id];
+  return `<div class="xform-card ${on?'on':''}">
+    <label><input type="checkbox" data-xform="${x.id}" ${on?'checked':''}>${esc(x.label)}</label>
+    <div class="xform-meta">${x.phases.length} etapy · aktywnie łącznie ${fmtDur(x.phases.filter(p=>p.type==='aktywny').reduce((s,p)=>s+phaseMin(x,p),0))}${x.phases.some(p=>p.type==='suszenie')?' + suszenie':''}</div>
+    ${on ? `<div class="phase-edit">
+      ${x.phases.map((p,i) => `<div class="phase-row">
+        <span class="p-icon">${iconFor(p,i,x.phases)}</span>
+        <span class="p-label">${esc(p.label)}</span>
+        <input type="number" min="0" step="5" data-phase-min data-xform="${x.id}" data-phase="${p.id}" value="${phaseMin(x,p)}">
+        <span class="p-unit">min</span>
+      </div>`).join('')}
+    </div>` : ''}
+  </div>`;
+}
+
+function renderHarmonogram(){
+  const plan = buildPlan();
+  if (!plan) return `<div class="card"><div class="empty">Nie wybrałaś jeszcze żadnej zmiany.<br>Wróć do „Twoje pomieszczenie”, żeby zobaczyć harmonogram.</div></div>
+    <div class="actions"><button class="btn btn-ghost" data-go-pomieszczenie>← Twoje pomieszczenie</button></div>`;
+
+  const projectKeys = plan.xforms.flatMap(x => x.phases.filter(p=>p.type==='aktywny').map(p => doneKey(x,p)));
+  const doneCount = projectKeys.filter(k => state.done[k]).length;
+  const pct = projectKeys.length ? Math.round(doneCount/projectKeys.length*100) : 0;
+
+  return `<div class="result-hero">
+    <span class="kicker">Twój postęp</span>
+    <div class="big">${pct}%</div>
+    <div class="progress-bar"><i style="width:${pct}%"></i></div>
+    <p class="sub">${fmtDur(plan.totalActivAll)} pracy aktywnej · ${plan.trackCount===2?'2 osoby równolegle':'1 osoba'}</p>
+  </div>
+  ${plan.days.map(day => day.items.length ? `<div class="card day-block">
+    <h3>${esc(day.label)}</h3>
+    <div class="day-sub">${day.items.filter(i=>i.phase.type==='aktywny').length} etapów aktywnych</div>
+    <div class="tl">
+      ${day.items.map(item => {
+        const isSuszenie = item.phase.type==='suszenie';
+        const key = doneKey(item.x, item.phase);
+        const done = !isSuszenie && state.done[key] === true;
+        return `<div class="tl-phase ${item.phase.type} ${done?'done':''}">
+          <div class="tl-head">
+            ${isSuszenie ? '<span class="tl-wait-badge">Czekanie</span>' : `<input type="checkbox" data-done="${key}" ${done?'checked':''}>`}
+            <span class="tl-time">${isSuszenie && (item.end-item.start)>=1440 ? 'zaczyna '+toHHMM(item.start)+' · '+fmtDur(item.end-item.start) : toHHMM(item.start)+'–'+toHHMM(item.end)}</span>
+            <span class="tl-name">${esc(item.phase.label)}</span>
+            ${plan.trackCount===2?`<span class="tl-track">O${item.track+1}</span>`:''}
+          </div>
+          <div class="tl-xform">${esc(item.x.label)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>` : '').join('')}
+  ${plan.carryover.length ? `<div class="card"><div class="carryover-box">
+    <b>Nie kończy się w pełni w tym weekendzie:</b>
+    <ul>${plan.carryover.map(c => `<li>${esc(c.x.label)} — ${esc(c.reason)}</li>`).join('')}</ul>
+  </div></div>` : ''}
+  <div class="actions">
+    <button class="btn btn-ghost" data-go-pomieszczenie>← Zmień</button>
+    <button class="btn btn-primary" data-print>Zapisz jako PDF</button>
+  </div>
+  <p class="disclaimer">Harmonogram orientacyjny na podstawie czasów, które wpisałaś — Twoje realne tempo może się różnić. Czasy suszenia to typowe zalecenia produktowe, nie gwarancje; sprawdź etykietę swojego produktu.</p>`;
+}
+
+function renderMaterialy(){
+  const xforms = DATA.xforms.filter(x => state.selected[x.id]);
+  if (!xforms.length) return `<div class="card"><div class="empty">Nie wybrałaś jeszcze żadnej zmiany.</div></div>
+    <div class="actions"><button class="btn btn-ghost" data-go-pomieszczenie>← Twoje pomieszczenie</button></div>`;
+  return `<div class="card">
+    <h2>Czego potrzebujesz</h2>
+    <p class="hint">Lista materiałów do wybranych zmian — zaznaczaj w miarę, jak je masz.</p>
+    ${xforms.map(x => `<div class="materials-cat">${esc(x.label)}</div>
+      ${x.materials.map((m,i) => {
+        const key = matKey(x,i);
+        const bought = state.matBought[key] === true;
+        return `<div class="mat-item"><input type="checkbox" data-mat="${key}" ${bought?'checked':''}><span style="${bought?'text-decoration:line-through;color:var(--muted)':''}">${esc(m)}</span></div>`;
+      }).join('')}
+    `).join('')}
+  </div>
+  <div class="actions"><button class="btn btn-ghost" data-go-pomieszczenie>← Zmień</button></div>`;
+}
+
+function render(){
+  renderNav();
+  const main = document.getElementById('main');
+  const scrollY = window.scrollY;
+  const body = state.tab==='harmonogram' ? renderHarmonogram() : (state.tab==='materialy' ? renderMaterialy() : renderPomieszczenie());
+  main.innerHTML = body + `<p class="save-status" data-save>${saveText()}</p>`;
+
+  main.querySelectorAll('[data-room]').forEach(b => b.onclick = () => {
+    const newRoom = b.dataset.room;
+    if (state.room !== newRoom) { state.room = newRoom; state.selected = {}; }
+    save(); render();
+  });
+  main.querySelectorAll('[data-xform]').forEach(cb => cb.onchange = () => {
+    const id = cb.dataset.xform;
+    if (cb.checked) state.selected[id] = true; else delete state.selected[id];
+    save(); render();
+  });
+  main.querySelectorAll('[data-phase-min]').forEach(inp => inp.oninput = () => {
+    const key = inp.dataset.xform+'|'+inp.dataset.phase;
+    state.phaseMin[key] = num(inp.value, undefined);
+    save();
+  });
+  const satInput = main.querySelector('#sat-hours');
+  if (satInput) satInput.oninput = () => {
+    state.satHours = clampHours(num(satInput.value, 0));
+    if (num(satInput.value,0) > MAX_DAY_HOURS) satInput.value = state.satHours;
+    save();
+  };
+  const sunInput = main.querySelector('#sun-hours');
+  if (sunInput) sunInput.oninput = () => {
+    state.sunHours = clampHours(num(sunInput.value, 0));
+    if (num(sunInput.value,0) > MAX_DAY_HOURS) sunInput.value = state.sunHours;
+    save();
+  };
+  main.querySelectorAll('[data-people]').forEach(b => b.onclick = () => { state.people = Number(b.dataset.people); save(); render(); });
+
+  main.querySelectorAll('[data-done]').forEach(cb => cb.onchange = () => {
+    if (cb.checked) state.done[cb.dataset.done] = true; else delete state.done[cb.dataset.done];
+    save();
+    cb.closest('.tl-phase').classList.toggle('done', cb.checked);
+    const pctEl = document.querySelector('.result-hero .big');
+    const barEl = document.querySelector('.progress-bar i');
+    const xforms = DATA.xforms.filter(x => state.selected[x.id]);
+    if (pctEl && barEl && xforms.length) {
+      const projectKeys = xforms.flatMap(x => x.phases.filter(p=>p.type==='aktywny').map(p => doneKey(x,p)));
+      const doneNow = projectKeys.filter(k => state.done[k]).length;
+      const pct = projectKeys.length ? Math.round(doneNow/projectKeys.length*100) : 0;
+      pctEl.textContent = pct+'%';
+      barEl.style.width = pct+'%';
+    }
+  });
+  main.querySelectorAll('[data-mat]').forEach(cb => cb.onchange = () => {
+    if (cb.checked) state.matBought[cb.dataset.mat] = true; else delete state.matBought[cb.dataset.mat];
+    save();
+    const span = cb.nextElementSibling;
+    if (span) span.style.cssText = cb.checked ? 'text-decoration:line-through;color:var(--muted)' : '';
+  });
+
+  const goHarmonogram = main.querySelector('[data-go-harmonogram]'); if (goHarmonogram) goHarmonogram.onclick = () => goTab('harmonogram');
+  const goPomieszczenie = main.querySelectorAll('[data-go-pomieszczenie]'); goPomieszczenie.forEach(b=>b.onclick = () => goTab('pomieszczenie'));
+  const printBtn = main.querySelector('[data-print]'); if (printBtn) printBtn.onclick = () => window.print();
+
+  window.scrollTo({top:scrollY});
+}
+
+function renderHeaderPhoto(){
+  const el = document.getElementById('header-photo');
+  if (DATA.headerPhoto) el.innerHTML = `<img class="photo" src="${DATA.headerPhoto}" alt="">`;
+  else el.innerHTML = `<div class="photo-fallback"></div>`;
+}
+
+load();
+renderHeaderPhoto();
+render();
+})();
+</script>
+</body>
+</html>

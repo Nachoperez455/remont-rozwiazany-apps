@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#382733">
+<meta name="description" content="Spersonalizowany budżet Twojego remontu: materiały, ilości, opcjonalna robocizna i lista zakupów, pomieszczenie po pomieszczeniu.">
+<title>Kalkulator Twojego Kosztu — Remont Rozwiązany</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+:root{
+  --ink:#34272f;--muted:#796c70;--bg:#faf7f2;--paper:#fffefa;--line:#e8e0d8;
+  --accent:#92563d;--accent-soft:#f3e6da;--dark:#382733;--radius:18px;
+  --good:#5b7a5e;--good-soft:#e7eee6;--warn:#a65d3a;--warn-soft:#f5e3d6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--dark);line-height:1.15}
+.serif-em{font-style:italic}
+p{margin:0}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+.wrap{max-width:640px;margin:0 auto;padding:0 18px}
+
+header.top{background:var(--dark);color:#fff;padding:22px 18px 26px;text-align:center}
+header.top .kicker{font-family:'Manrope',sans-serif;font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-soft);opacity:.85}
+header.top h1{font-size:25px;color:#fff;margin:10px 0 8px}
+header.top p{font-size:14px;color:#e5d9ce;max-width:36ch;margin:0 auto}
+
+nav.nav{display:flex;gap:6px;overflow-x:auto;padding:14px 18px 0;max-width:640px;margin:0 auto;scrollbar-width:none}
+nav.nav::-webkit-scrollbar{display:none}
+nav.nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);color:var(--muted);font-weight:600;font-size:13px;padding:9px 14px;border-radius:100px;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s ease}
+nav.nav button .step-no{width:18px;height:18px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
+nav.nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+nav.nav button.active .step-no{background:rgba(255,255,255,.25);color:#fff}
+
+main{padding:20px 0 0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 10px 30px -18px rgba(56,39,51,.18)}
+.card h2{font-size:18px;margin-bottom:6px}
+.card .hint{color:var(--muted);font-size:13px;margin-bottom:14px}
+
+.budget-row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:14px}
+.budget-row label{font-size:13px;font-weight:600;flex:1}
+.budget-row input{width:100px;border:1px solid var(--line);border-radius:8px;padding:7px 8px;font-size:14px;text-align:right;background:#fff;color:var(--ink)}
+
+.room{border-top:1px solid var(--line);padding:13px 0}
+.room:first-of-type{border-top:0}
+.room>label{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.room input[type=checkbox]{width:21px;height:21px;accent-color:var(--accent);flex:0 0 auto}
+.room .room-name{font-weight:700;font-size:15px}
+.room .room-ref{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+
+.xforms{padding-left:33px;margin-top:10px;display:flex;flex-direction:column;gap:10px}
+.xform{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.xform>label{display:flex;align-items:center;gap:9px;cursor:pointer;font-weight:600;font-size:13.5px}
+.xform input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);flex:0 0 auto}
+.xform-body{margin-top:10px;padding-left:27px;display:flex;flex-direction:column;gap:9px}
+.field-row{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.field-row .f-label{flex:1;color:var(--muted)}
+.field-row input[type=number]{width:78px;border:1px solid var(--line);border-radius:8px;padding:6px 7px;font-size:13.5px;text-align:right;background:#fff;color:var(--ink)}
+.field-row .f-unit{color:var(--muted);width:34px;flex:0 0 auto}
+.xform-note{font-size:11px;color:var(--muted);line-height:1.4;padding-left:27px}
+.xform-note.missing{color:var(--warn)}
+.pro-toggle{display:flex;align-items:center;gap:9px;padding-top:8px;margin-top:2px;border-top:1px dashed var(--line)}
+.pro-toggle label{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;cursor:pointer;flex:1}
+.pro-toggle input[type=checkbox]{width:17px;height:17px;accent-color:var(--warn);flex:0 0 auto}
+.xform-line-total{text-align:right;font-size:13px;font-weight:700;color:var(--accent);padding-left:27px}
+
+.result-hero{background:linear-gradient(165deg,var(--dark),#2c2027);color:#fff;border-radius:var(--radius);padding:24px 20px;text-align:center;margin-bottom:14px}
+.result-hero .kicker{font-family:'Manrope',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-soft);opacity:.85}
+.result-hero .big{font-family:'Playfair Display',serif;font-weight:700;font-size:34px;margin:10px 0 4px;color:#fff;line-height:1.15}
+.result-hero .big .u{font-size:18px}
+.result-hero .sub{font-size:13px;color:#d9c9bd}
+.budget-badge{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700}
+.budget-badge.ok{background:var(--good-soft);color:var(--good)}
+.budget-badge.over{background:var(--warn-soft);color:var(--warn)}
+.budget-badge.partial{background:rgba(255,255,255,.16);color:#f0c9a8}
+
+.breakdown-room{border-top:1px solid var(--line);padding:13px 0}
+.breakdown-room:first-of-type{border-top:0}
+.breakdown-room .br-head{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:14.5px;margin-bottom:6px}
+.breakdown-line{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);padding:3px 0}
+.breakdown-line b{color:var(--ink);font-weight:600}
+
+.shop-item{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-top:1px solid var(--line);font-size:13.5px}
+.shop-item:first-of-type{border-top:0}
+.shop-item.bought{opacity:.5}
+.shop-item.bought .s-name{text-decoration:line-through}
+.shop-item input[type=checkbox]{width:20px;height:20px;accent-color:var(--good);flex:0 0 auto;margin-top:2px}
+.shop-item .s-main{flex:1;min-width:0}
+.shop-item .s-name{font-weight:600}
+.shop-item .s-qty{color:var(--muted);font-size:12px;margin-top:1px}
+.shop-item .s-source{color:var(--muted);font-size:10.5px;margin-top:3px;line-height:1.4}
+.shop-item .s-right{flex:0 0 auto;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.shop-item .s-price{font-weight:700;white-space:nowrap}
+.shop-item .s-price-input{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)}
+.shop-item .s-price-input input{width:62px;border:1px solid var(--line);border-radius:7px;padding:4px 6px;font-size:12.5px;text-align:right;background:#fff;color:var(--ink)}
+.shop-item .s-price.missing{color:var(--warn);font-weight:600;font-size:11px;max-width:120px}
+
+.save-explain{background:var(--good-soft);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--ink);line-height:1.5;margin-top:4px}
+
+.empty{text-align:center;color:var(--muted);font-size:14px;padding:30px 10px}
+.actions{display:flex;gap:10px;margin-top:4px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;flex:1;padding:14px 16px;border-radius:12px;border:0;font-weight:700;font-size:14.5px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-ghost{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.btn-sm{padding:9px 12px;font-size:12.5px;flex:0 0 auto}
+
+.disclaimer{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+.sources{font-size:10.5px;color:var(--muted);text-align:center;margin-top:6px;line-height:1.6;opacity:.85}
+.save-status{font-size:11px;color:var(--muted);text-align:center;margin-top:16px}
+
+@media print{
+  nav.nav,.actions,header.top .kicker,.xform input[type=checkbox],.pro-toggle{}
+  body{background:#fff}
+  .card,.result-hero{box-shadow:none;border:1px solid #ddd}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="kicker">✦ Tylko dla osób, które już kupiły ✦</span>
+  <h1>Kalkulator <span class="serif-em">Twojego Kosztu</span></h1>
+  <p>Wpisz prawdziwe metry kwadratowe swojego projektu — zobacz, z czego dokładnie składa się budżet, materiał po materiale.</p>
+</header>
+
+<nav class="nav" id="nav"></nav>
+<main class="wrap" id="main"></main>
+
+<script>
+/* Ceny źródłowe: Leroy Merlin, Castorama i OBI (sprawdzone 2026-11-02) — część
+   stron nie miała własnej daty, więc traktuj je jako przedział orientacyjny, nie
+   cenę sztywną. Robocizna: przewodniki muratordom.pl i kb.pl „Ile kosztuje”.
+   Gdzie nie znaleziono wiarygodnej ceny (baterie, fuga do przecierania), pole
+   zostaje puste — użytkowniczka wpisuje własną cenę. */
+window.wasteQty = (qty, wastePct) => Math.ceil(Math.round(qty*(100+wastePct))/10)/10;
+window.CALC_DATA = {
+  CONTINGENCY_DEFAULT: 10,
+  rooms: [
+    { id:'kuchnia', label:'Kuchnia', ref:'fronty, blat, ściana, podłoga', xforms:['malowanie','plytki','podloga','folia','bateria'] },
+    { id:'lazienka', label:'Łazienka', ref:'glazura, armatura', xforms:['malowanie','plytki','bateria'] },
+    { id:'sypialnia', label:'Sypialnia', ref:'ściany, podłoga', xforms:['malowanie','podloga'] },
+    { id:'salon', label:'Salon', ref:'ściany, podłoga, meble', xforms:['malowanie','podloga','folia'] },
+    { id:'przedpokoj', label:'Przedpokój / Hol', ref:'ściany, podłoga', xforms:['malowanie','podloga'] },
+    { id:'biuro', label:'Biuro / Kącik do pracy', ref:'ściana, meble', xforms:['malowanie','folia'] }
+  ],
+  // wastePct = zwykła rezerwa na docinki/straty materiału (to nie jest cena z
+  // badania rynku, to standardowa reguła budżetowa: 10-15% przy płytkach/panelach/folii).
+  xforms: {
+    malowanie: {
+      label:'Malowanie ścian', unit:'m2', unitLabel:'m2 ściany', shopUnit:'L',
+      priceUnit:'zł/litr', defaultPrice:18, priceSource:'średnia Leroy Merlin/Castorama, farba lateksowa biała: 8–40 zł/L',
+      coverageNote:'2 warstwy, średnia wydajność 10 m2/L na warstwę', wastePct:10, wasteNote:'+10% zwykła rezerwa (narożniki, druga warstwa)',
+      diyOnly:true,
+      calc:(qty,price)=>{ const effQty = window.wasteQty(qty,10); const liters = effQty>0 ? (effQty/10)*2 : 0; const litersBuy = Math.ceil(liters*2)/2; return { cost: litersBuy*price, shopQty: litersBuy }; },
+      shoppingLine:(qty,price,extra)=> extra && extra.shopQty ? `Farba lateksowa` : null
+    },
+    plytki: {
+      label:'Nowa glazura / gres', unit:'m2', unitLabel:'m2 powierzchni', shopUnit:'m2',
+      priceUnit:'zł/m2 (materiał + klej + fuga)', defaultPrice:70, priceSource:'płytki/gres 35–85 zł/m2 + klej+fuga ~15 zł/m2, Leroy Merlin/Castorama/OBI',
+      diyOnly:false, laborUnit:'zł/m2 robocizny', laborDefault:130, laborSource:'montaż płytek standardowych 110–160 zł/m2, muratordom.pl/kb.pl',
+      wastePct:12, wasteNote:'+12% rezerwa na docinki (zwykła reguła przy płytkach)',
+      calc:(qty,price)=>{ const effQty = window.wasteQty(qty,12); return { cost: effQty*price, shopQty: effQty }; },
+      shoppingLine:(qty)=> qty>0 ? `Płytki/gres + klej + fuga` : null
+    },
+    podloga: {
+      label:'Panele laminowane', unit:'m2', unitLabel:'m2 podłogi', shopUnit:'m2',
+      priceUnit:'zł/m2', defaultPrice:45, priceSource:'panele laminowane AC3-AC4 27–98 zł/m2, muratordom.pl',
+      diyOnly:false, laborUnit:'zł/m2 robocizny', laborDefault:40, laborSource:'montaż paneli laminowanych 30–90 zł/m2, kb.pl/muratordom.pl',
+      wastePct:10, wasteNote:'+10% rezerwa na docinki (zwykła reguła przy panelach)',
+      calc:(qty,price)=>{ const effQty = window.wasteQty(qty,10); return { cost: effQty*price, shopQty: effQty }; },
+      shoppingLine:(qty)=> qty>0 ? `Panele laminowane` : null
+    },
+    folia: {
+      label:'Folia samoprzylepna (fronty/meble)', unit:'m2', unitLabel:'m2 powierzchni', shopUnit:'m2',
+      priceUnit:'zł/m2', defaultPrice:45, priceSource:'folia samoprzylepna na meble 44–47 zł/m2, Leroy Merlin/OBI',
+      diyOnly:true, wastePct:10, wasteNote:'+10% rezerwa na zakładki/docinki',
+      calc:(qty,price)=>{ const effQty = window.wasteQty(qty,10); return { cost: effQty*price, shopQty: effQty }; },
+      shoppingLine:(qty)=> qty>0 ? `Folia samoprzylepna` : null
+    },
+    bateria: {
+      label:'Nowa bateria / kran', unit:'szt', unitLabel:'sztuki', shopUnit:'szt',
+      priceUnit:'zł/szt', defaultPrice:null, priceSource:'cena zależy bardzo od modelu — sprawdź „bateria łazienkowa/kuchenna” w Leroy Merlin lub Castorama dla Twojego wyboru (zwykle 100–400 zł)',
+      diyOnly:false, laborUnit:'zł/szt robocizny', laborDefault:180, laborSource:'montaż baterii 100–280 zł/szt, cenauslug.pl/kb.pl',
+      wastePct:0,
+      calc:(qty,price)=>({ cost: qty*price, shopQty: qty }),
+      shoppingLine:(qty)=> qty>0 ? `Nowa bateria` : null
+    }
+  }
+};
+</script>
+
+<script>
+(() => {
+'use strict';
+const DATA = window.CALC_DATA;
+const KEY = 'remont-rozwiazany:kalkulator-kosztow:v3';
+const fmtNum = n => Math.round(n);
+const fmt = n => fmtNum(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' zł';
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = (v, def=0) => { const n = parseFloat(v); return isFinite(n) && n >= 0 ? n : def; };
+
+function initial(){
+  return { tab:'projekt', budget:null, contingencyPct: DATA.CONTINGENCY_DEFAULT, rooms:{}, bought:{} };
+  // rooms[roomId] = { [xformId]: { on, qty, price, pro, laborPrice } }
+  // bought[roomId|xformId] = true/false (lista zakupów)
+}
+let state = initial(), storageOK = true;
+
+function xformState(roomId, xId){
+  state.rooms[roomId] = state.rooms[roomId] || {};
+  const x = DATA.xforms[xId];
+  state.rooms[roomId][xId] = state.rooms[roomId][xId] || {
+    on:false, qty:0, price: x.defaultPrice, pro:false, laborPrice: x.laborDefault ?? null
+  };
+  return state.rooms[roomId][xId];
+}
+
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); storageOK = true; }
+  catch(_) { storageOK = false; }
+  document.querySelectorAll('[data-save]').forEach(el => el.textContent = saveText());
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed.rooms !== 'object') return;
+    const clean = {};
+    Object.keys(parsed.rooms).forEach(roomId => {
+      const room = DATA.rooms.find(r => r.id === roomId);
+      if (!room) return;
+      clean[roomId] = {};
+      Object.keys(parsed.rooms[roomId] || {}).forEach(xId => {
+        if (!room.xforms.includes(xId)) return;
+        const raw2 = parsed.rooms[roomId][xId] || {};
+        clean[roomId][xId] = {
+          on: raw2.on === true,
+          qty: num(raw2.qty, 0),
+          price: raw2.price === null || raw2.price === '' ? null : num(raw2.price, DATA.xforms[xId].defaultPrice),
+          pro: raw2.pro === true,
+          laborPrice: raw2.laborPrice === null || raw2.laborPrice === '' ? null : num(raw2.laborPrice, DATA.xforms[xId].laborDefault ?? null)
+        };
+      });
+    });
+    state.rooms = clean;
+    state.budget = parsed.budget === null || parsed.budget === '' ? null : num(parsed.budget, null);
+    state.contingencyPct = num(parsed.contingencyPct, DATA.CONTINGENCY_DEFAULT);
+    state.bought = {};
+    if (parsed.bought && typeof parsed.bought === 'object') {
+      Object.keys(parsed.bought).slice(0,200).forEach(k => {
+        if (/^[a-z0-9_-]+\|[a-z0-9_-]+$/.test(k)) state.bought[k] = parsed.bought[k] === true;
+      });
+    }
+    if (['projekt','wynik'].includes(parsed.tab)) state.tab = parsed.tab;
+  } catch(_) { storageOK = false; }
+}
+const saveText = () => storageOK
+  ? 'Zapisano automatycznie na tym urządzeniu.'
+  : 'Zapis lokalny nie jest dostępny w tej przeglądarce — wybory zostaną utracone po zamknięciu.';
+
+/* ---- obliczenia centralne, używane zarówno przez render jak i przez odświeżanie bez re-renderu ---- */
+function computeAll(){
+  let materialsTotal = 0, actualTotal = 0, savingsTotal = 0;
+  let proRequestedLines = 0, incompleteCount = 0, laborPending = 0;
+  const roomRows = [];
+  const shopping = [];
+  DATA.rooms.forEach(room => {
+    if (!state.rooms[room.id]) return;
+    const lines = [];
+    let roomActual = 0, roomHasData = false;
+    room.xforms.forEach(xId => {
+      const s = state.rooms[room.id][xId];
+      if (!s || !s.on) return;
+      const x = DATA.xforms[xId];
+      const price = s.price;
+      const qty = s.qty || 0;
+      if (qty <= 0) return;
+      roomHasData = true;
+      const priceKnown = price !== null && price !== undefined;
+      const calc = priceKnown ? x.calc(qty, price) : null;
+      const materialCost = calc ? calc.cost : 0;
+      if (priceKnown) materialsTotal += materialCost;
+      else incompleteCount++;
+
+      // Oszczędność = TYLKO linie, gdzie użytkowniczka wyraźnie poprosiła o porównanie
+      // z fachowcem (zaznaczyła „Wezwę fachowca”). Linia niezaznaczona to jej wybór,
+      // żeby zrobić to samodzielnie, nie brak danych — nie znosi oszczędności z innych linii.
+      let laborCost = 0, laborKnown = false;
+      if (!x.diyOnly && s.pro) {
+        proRequestedLines++;
+        laborKnown = s.laborPrice !== null && s.laborPrice !== undefined;
+        if (!laborKnown) { incompleteCount++; laborPending++; }
+        if (priceKnown && laborKnown) {
+          laborCost = qty * s.laborPrice;
+          savingsTotal += laborCost;
+        }
+      }
+      // Rzeczywisty koszt linii = to, co faktycznie płaci przy swoich wyborach:
+      // materiał (jeśli robi sama LUB nawet jeśli wezwie fachowca, materiał i tak
+      // kupuje ona) + robocizna TYLKO jeśli zaznaczyła „Wezwę fachowca” I jest znana.
+      // WAŻNE: znany materiał wchodzi do budżetu nawet jeśli robocizna wciąż
+      // brakuje — potwierdzony koszt nie zniknie z sumy, bo inny koszt jest
+      // niekompletny (to był realny błąd: cała linia wypadała i pokazywała 0).
+      const linePartial = priceKnown && s.pro && !laborKnown;
+      const lineActual = (priceKnown ? materialCost : 0) + (priceKnown && s.pro && laborKnown ? laborCost : 0);
+      if (priceKnown) { actualTotal += lineActual; roomActual += lineActual; }
+
+      lines.push({ xId, x, qty, price, priceKnown, materialCost, laborCost, laborKnown, pro: s.pro, lineActual, linePartial, calc });
+      const shopLabel = x.shoppingLine(qty, price, calc);
+      if (shopLabel) shopping.push({
+        roomId: room.id, xId, label: shopLabel, priceKnown, cost: materialCost,
+        qty: calc ? calc.shopQty : qty, unit: x.shopUnit, room: room.label,
+        source: x.priceSource, price
+      });
+    });
+    if (roomHasData) roomRows.push({ room, lines, roomActual });
+  });
+  const incomplete = incompleteCount > 0;
+  const contingencyPct = num(state.contingencyPct, 0);
+  const contingencyAmount = actualTotal * (contingencyPct/100);
+  const grandTotal = actualTotal + contingencyAmount;
+  const savings = proRequestedLines > 0 && savingsTotal > 0 ? savingsTotal : null;
+  return {
+    materialsTotal, actualTotal, contingencyPct, contingencyAmount, grandTotal,
+    incomplete, incompleteCount, roomRows, shopping, savings, proRequestedLines, laborPending,
+    hasAny: roomRows.length>0
+  };
+}
+
+/* ---- navegación de tabs ---- */
+const tabs = [['projekt','Twój projekt'],['wynik','Twój wynik']];
+function renderNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = tabs.map(([id,title],i) =>
+    `<button data-tab="${id}" class="${state.tab===id?'active':''}"><span class="step-no">${i+1}</span>${title}</button>`
+  ).join('');
+  nav.querySelectorAll('button').forEach(b => b.onclick = () => goTab(b.dataset.tab));
+}
+function goTab(id){ state.tab = id; save(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ---- tab 1: projekt ---- */
+function renderProjekt(){
+  return `<div class="budget-row">
+    <label for="budget-input">Twój dostępny budżet (opcjonalnie)</label>
+    <input type="number" id="budget-input" inputmode="decimal" min="0" step="50" value="${state.budget ?? ''}" placeholder="np: 3000">
+  </div>
+  <div class="budget-row">
+    <label for="contingency-input">Rezerwa na niespodziewane wydatki (%)</label>
+    <input type="number" id="contingency-input" inputmode="decimal" min="0" max="50" step="1" value="${state.contingencyPct}">
+  </div>
+  <div class="card">
+    <h2>Co zmieniasz?</h2>
+    <p class="hint">Zaznacz pomieszczenie, a potem każdą zmianę, którą robisz — wpisz prawdziwe metry/sztuki, nie ogólne oszacowanie.</p>
+    ${DATA.rooms.map(room => {
+      const roomOn = !!state.rooms[room.id];
+      return `<div class="room">
+        <label><input type="checkbox" data-room-toggle="${room.id}" ${roomOn?'checked':''}>
+          <span><span class="room-name">${esc(room.label)}</span><span class="room-ref">${esc(room.ref)}</span></span>
+        </label>
+        ${roomOn ? `<div class="xforms">${room.xforms.map(xId => renderXform(room.id, xId)).join('')}</div>` : ''}
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" data-go-result>Zobacz mój budżet →</button>
+  </div>`;
+}
+
+function renderXform(roomId, xId){
+  const x = DATA.xforms[xId];
+  const s = xformState(roomId, xId);
+  const lineKnown = s.price !== null && s.price !== undefined;
+  const line = lineKnown ? x.calc(s.qty || 0, s.price) : null;
+  return `<div class="xform">
+    <label><input type="checkbox" data-xform-toggle="${roomId}|${xId}" ${s.on?'checked':''}>${esc(x.label)}</label>
+    ${s.on ? `<div class="xform-body">
+      <div class="field-row">
+        <span class="f-label">Ile (${esc(x.unitLabel)})</span>
+        <input type="number" min="0" step="0.5" inputmode="decimal" data-field="qty" data-room="${roomId}" data-xform="${xId}" value="${s.qty || ''}">
+        <span class="f-unit">${esc(x.unit)}</span>
+      </div>
+      <div class="field-row">
+        <span class="f-label">Cena (${esc(x.priceUnit)})</span>
+        <input type="number" min="0" step="1" inputmode="decimal" data-field="price" data-room="${roomId}" data-xform="${xId}" value="${s.price ?? ''}" placeholder="${x.defaultPrice===null?'uzupełnij':''}">
+      </div>
+      ${!x.diyOnly ? `<div class="pro-toggle">
+        <label><input type="checkbox" data-field="pro" data-room="${roomId}" data-xform="${xId}" ${s.pro?'checked':''}>Wezwę fachowca do tego</label>
+      </div>
+      ${s.pro ? `<div class="field-row">
+        <span class="f-label">Robocizna (${esc(x.laborUnit)})</span>
+        <input type="number" min="0" step="1" inputmode="decimal" data-field="laborPrice" data-room="${roomId}" data-xform="${xId}" value="${s.laborPrice ?? ''}">
+      </div>` : ''}` : ''}
+    </div>
+    <div class="xform-note ${x.defaultPrice===null && !lineKnown ? 'missing':''}">${esc(x.priceSource)}${x.coverageNote?' · '+esc(x.coverageNote):''}${x.wasteNote?' · '+esc(x.wasteNote):''}${x.laborSource && !x.diyOnly?' · robocizna: '+esc(x.laborSource):''}</div>
+    <div class="xform-line-total" data-line-total="${roomId}|${xId}">${lineKnown && (s.qty||0)>0 ? fmt(line.cost) : '—'}</div>
+    ` : ''}
+  </div>`;
+}
+
+const fmtQty = n => { const r = Math.round(n*10)/10; return Number.isInteger(r) ? String(r) : r.toFixed(1); };
+
+function renderShopItem(s){
+  const key = s.roomId + '|' + s.xId;
+  const bought = state.bought[key] === true;
+  return `<div class="shop-item ${bought?'bought':''}">
+    <input type="checkbox" data-bought="${key}" ${bought?'checked':''}>
+    <div class="s-main">
+      <div class="s-name">${esc(s.label)} · ${fmtQty(s.qty)} ${esc(s.unit)}</div>
+      <div class="s-qty">${esc(s.room)}</div>
+      <div class="s-source">źródło ceny: ${esc(s.source)}</div>
+    </div>
+    <div class="s-right">
+      <div class="${s.priceKnown?'s-price':'s-price missing'}">${s.priceKnown?fmt(s.cost):'bez ceny'}</div>
+      <label class="s-price-input">cena/j. <input type="number" min="0" step="1" inputmode="decimal" data-shop-price="${s.roomId}|${s.xId}" value="${s.price ?? ''}"></label>
+    </div>
+  </div>`;
+}
+
+/* ---- tab 2: wynik ---- */
+function renderWynik(){
+  const t = computeAll();
+  if (!t.hasAny) {
+    return `<div class="card"><div class="empty">Nie dodałaś jeszcze żadnej zmiany.<br>Wróć do „Twój projekt”, żeby zobaczyć budżet.</div></div>
+    <div class="actions"><button class="btn btn-ghost" data-go-projekt>← Twój projekt</button></div>`;
+  }
+  const budgetKnown = state.budget !== null && state.budget !== undefined && state.budget > 0;
+  const over = budgetKnown && t.grandTotal > state.budget;
+  let badge;
+  if (!budgetKnown) badge = '';
+  else if (t.incomplete) badge = `<span class="budget-badge partial" data-out="budget-badge">Budżet częściowy — brakuje ${t.incompleteCount} cen${t.incompleteCount>1?'y':'y'}</span>`;
+  else if (over) badge = `<span class="budget-badge over" data-out="budget-badge">Ponad budżet o ${fmt(t.grandTotal-state.budget)}</span>`;
+  else badge = `<span class="budget-badge ok" data-out="budget-badge">W Twoim budżecie</span>`;
+
+  return `<div class="result-hero">
+    <span class="kicker">${t.incomplete ? 'Twój budżet (częściowy)' : 'Twój budżet całkowity'}</span>
+    <div class="big" data-out="grand-total">${fmt(t.grandTotal)}</div>
+    <p class="sub" data-out="grand-sub">materiały ${fmt(t.materialsTotal)}${t.actualTotal>t.materialsTotal?' + robocizna '+fmt(t.actualTotal-t.materialsTotal):''} + rezerwa ${t.contingencyPct}% (${fmt(t.contingencyAmount)})</p>
+    ${t.incomplete ? `<p class="sub" style="margin-top:6px;color:#f0c9a8">Brakuje jeszcze ${t.incompleteCount} ceny — suma powyżej zawiera TYLKO potwierdzone koszty; linie z brakującą ceną są częściowe (zobacz szczegóły po pomieszczeniach poniżej).</p>` : ''}
+    ${badge}
+  </div>
+  ${t.savings !== null ? (() => {
+    const savingsFull = t.savings * (1 + t.contingencyPct/100);
+    const hypotheticalTotal = t.grandTotal - savingsFull;
+    return `<div class="card">
+    <h2>Jeśli zrobisz to sama, a nie fachowiec</h2>
+    <p class="hint" style="margin-bottom:8px">To NIE jest oszczędność już uzyskana — to ile byłby Twój budżet, GDYBYŚ zmieniła wybór w zmianach, gdzie teraz zaznaczyłaś „Wezwę fachowca”.</p>
+    <div class="save-explain">Teraz (z fachowcem): <b data-out="now-total">${fmt(t.grandTotal)}</b><br>Gdybyś zrobiła to sama: <b data-out="hypo-total">${fmt(hypotheticalTotal)}</b><br>Różnica: <b data-out="save-amount">${fmt(savingsFull)}</b> mniej.</div>
+    ${t.laborPending>0 ? `<p class="hint" style="margin-top:8px">Porównanie częściowe: masz jeszcze ${t.laborPending} zmian${t.laborPending>1?'y':'ę'} z zaznaczonym „Wezwę fachowca”, ale bez ceny robocizny — nie wchodzą jeszcze tutaj.</p>` : ''}
+  </div>`;
+  })() : (t.proRequestedLines>0 ? `<div class="card"><p class="hint" style="margin:0">Uzupełnij cenę robocizny w zmianach, gdzie zaznaczyłaś „Wezwę fachowca”, żeby zobaczyć, jaka byłaby różnica, gdybyś zrobiła je sama.</p></div>` : '')}
+  <div class="card">
+    <h2>Szczegóły po pomieszczeniach</h2>
+    ${t.roomRows.map(r => `<div class="breakdown-room">
+      <div class="br-head"><span>${esc(r.room.label)}</span><span data-out="room-total:${r.room.id}">${fmt(r.roomActual)}</span></div>
+      ${r.lines.map(l => `<div class="breakdown-line"><span>${esc(l.x.label)} (${l.qty} ${esc(l.x.unit)})${l.pro?' + fachowiec':''}</span><b>${!l.priceKnown ? 'brak ceny' : (l.linePartial ? fmt(l.lineActual)+' (+ brak robocizny)' : fmt(l.lineActual))}</b></div>`).join('')}
+    </div>`).join('')}
+  </div>
+  <div class="card">
+    <h2>Lista zakupów</h2>
+    <p class="hint" style="margin-bottom:10px">Ilości z już wliczoną rezerwą na docinki/straty. Zaznaczaj w miarę zakupów.</p>
+    ${t.shopping.map(s => renderShopItem(s)).join('')}
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost" data-go-projekt>← Zmień</button>
+    <button class="btn btn-primary" data-print>Zapisz jako PDF</button>
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost btn-sm" data-export>Eksportuj projekt (.json)</button>
+    <button class="btn btn-ghost btn-sm" data-import-trigger>Importuj projekt</button>
+    <input type="file" accept="application/json" id="import-file" style="display:none">
+  </div>
+  <p class="disclaimer">Szacunek orientacyjny na podstawie średnich cen rynkowych (Leroy Merlin, Castorama, OBI, opublikowane stawki robocizny) oraz cen, które wpisałaś — to nie jest sztywny kosztorys. Rzeczywiste ceny różnią się zależnie od miasta, dostawcy i stanu mieszkania.</p>`;
+}
+
+/* ---- render kompletny (checkboxy, zmiana zakładki) ---- */
+function render(){
+  renderNav();
+  const main = document.getElementById('main');
+  const scrollY = window.scrollY;
+  main.innerHTML = (state.tab === 'wynik' ? renderWynik() : renderProjekt())
+    + `<p class="save-status" data-save>${saveText()}</p>`;
+
+  const budgetInput = main.querySelector('#budget-input');
+  if (budgetInput) budgetInput.oninput = () => {
+    state.budget = budgetInput.value === '' ? null : num(budgetInput.value, null);
+    save();
+  };
+  const contingencyInput = main.querySelector('#contingency-input');
+  if (contingencyInput) contingencyInput.oninput = () => {
+    state.contingencyPct = num(contingencyInput.value, DATA.CONTINGENCY_DEFAULT);
+    save();
+  };
+  main.querySelectorAll('[data-shop-price]').forEach(inp => {
+    inp.oninput = () => {
+      const [roomId, xId] = inp.dataset.shopPrice.split('|');
+      const s = xformState(roomId, xId);
+      s.price = inp.value === '' ? null : num(inp.value, null);
+      save();
+      const selStart = inp.selectionStart, selEnd = inp.selectionEnd;
+      const key = inp.dataset.shopPrice;
+      render();
+      const again = document.querySelector(`[data-shop-price="${key}"]`);
+      if (again) { again.focus(); try { again.setSelectionRange(selStart, selEnd); } catch(_){} }
+    };
+  });
+  main.querySelectorAll('[data-bought]').forEach(cb => {
+    cb.onchange = () => {
+      state.bought[cb.dataset.bought] = cb.checked;
+      cb.closest('.shop-item').classList.toggle('bought', cb.checked);
+      save();
+    };
+  });
+
+  main.querySelectorAll('[data-room-toggle]').forEach(cb => {
+    cb.onchange = () => {
+      const id = cb.dataset.roomToggle;
+      if (!cb.checked) delete state.rooms[id];
+      else state.rooms[id] = state.rooms[id] || {};
+      save(); render();
+    };
+  });
+  main.querySelectorAll('[data-xform-toggle]').forEach(cb => {
+    cb.onchange = () => {
+      const [roomId, xId] = cb.dataset.xformToggle.split('|');
+      const s = xformState(roomId, xId);
+      s.on = cb.checked;
+      save(); render();
+    };
+  });
+  main.querySelectorAll('input[data-field]').forEach(inp => {
+    inp.oninput = () => {
+      const { room, xform, field } = inp.dataset;
+      const s = xformState(room, xform);
+      if (field === 'pro') return;
+      s[field] = inp.value === '' ? (field==='qty'?0:null) : num(inp.value, null);
+      save();
+      patchLiveOutputs();
+    };
+  });
+  main.querySelectorAll('input[data-field="pro"]').forEach(cb => {
+    cb.onchange = () => {
+      const { room, xform } = cb.dataset;
+      const s = xformState(room, xform);
+      s.pro = cb.checked;
+      save(); render();
+    };
+  });
+  const goResult = main.querySelector('[data-go-result]');
+  if (goResult) goResult.onclick = () => goTab('wynik');
+  const goProjekt = main.querySelector('[data-go-projekt]');
+  if (goProjekt) goProjekt.onclick = () => goTab('projekt');
+  const printBtn = main.querySelector('[data-print]');
+  if (printBtn) printBtn.onclick = () => window.print();
+  const exportBtn = main.querySelector('[data-export]');
+  if (exportBtn) exportBtn.onclick = doExport;
+  const importTrigger = main.querySelector('[data-import-trigger]');
+  const importFile = main.querySelector('#import-file');
+  if (importTrigger && importFile) {
+    importTrigger.onclick = () => importFile.click();
+    importFile.onchange = doImport;
+  }
+  window.scrollTo({top:scrollY});
+}
+
+/* ---- aktualizacja bez re-renderu, dla inputów tekstowych/liczbowych (nie gubi fokusu) ---- */
+function patchLiveOutputs(){
+  document.querySelectorAll('[data-line-total]').forEach(el => {
+    const [roomId, xId] = el.dataset.lineTotal.split('|');
+    const s = state.rooms[roomId] && state.rooms[roomId][xId];
+    if (!s) return;
+    const x = DATA.xforms[xId];
+    const priceKnown = s.price !== null && s.price !== undefined;
+    el.textContent = priceKnown && (s.qty||0)>0 ? fmt(x.calc(s.qty||0, s.price).cost) : '—';
+  });
+}
+
+/* ---- export / import ---- */
+function doExport(){
+  const blob = new Blob([JSON.stringify({ kind:'remont-kalkulator-kosztow', version:2, ...state }, null, 1)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'moj-projekt-remontu.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function doImport(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  if (file.size > 1000000) { alert('Plik jest za duży.'); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const raw = JSON.parse(String(reader.result));
+      if (!raw || raw.kind !== 'remont-kalkulator-kosztow') throw new Error('bad');
+      state = initial();
+      const tmp = { rooms: raw.rooms || {}, tab: raw.tab, budget: raw.budget, contingencyPct: raw.contingencyPct, bought: raw.bought };
+      localStorage.setItem(KEY, JSON.stringify(tmp));
+      load();
+      save(); render();
+    } catch(_) { alert('Ten plik nie wygląda na projekt wyeksportowany z tego narzędzia.'); }
+  };
+  reader.readAsText(file);
+}
+
+load();
+render();
+})();
+</script>
+</body>
+</html>

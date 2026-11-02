@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a2330">
+<meta name="description" content="Spersonalizowana diagnostyka: które z 47 częstych błędów remontowych dotyczą Ciebie, i jak ich uniknąć, zanim wydasz pieniądze na darmo.">
+<title>Diagnostyka Twojego Remontu — Remont Rozwiązany</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+:root{
+  --ink:#2b2420;--muted:#7a6f61;--bg:#faf6ee;--paper:#fffdf8;--line:#e9e0ce;
+  --amber:#c9922e;--amber-soft:#f6e9d0;--dark:#2a2330;--radius:18px;
+  --safety:#b23b3b;--safety-soft:#f5dcdc;
+  --good:#5b7a5e;--good-soft:#e7eee6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0;color:var(--dark);line-height:1.15}
+.serif-em{font-style:italic}
+p{margin:0}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:640px;margin:0 auto;padding:0 18px}
+
+header.top{position:relative;background:linear-gradient(165deg,var(--dark),#19141e);color:#fff;overflow:hidden}
+header.top .photo{width:100%;height:140px;object-fit:cover;display:block;opacity:.5}
+header.top .photo-fallback{width:100%;height:140px;background:linear-gradient(135deg,#3a2f42,#19141e)}
+header.top .content{padding:16px 18px 22px;text-align:center;margin-top:-48px;position:relative}
+header.top .kicker{font-family:'Manrope',sans-serif;font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber-soft);opacity:.95}
+header.top h1{font-size:23px;color:#fff;margin:8px 0 6px}
+header.top p{font-size:13.5px;color:#e9e2d8;max-width:38ch;margin:0 auto}
+
+main{padding:20px 0 0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 10px 30px -18px rgba(43,36,32,.16)}
+
+.progress-dots{display:flex;justify-content:center;gap:7px;padding:16px 0 4px}
+.progress-dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.progress-dots i.on{background:var(--amber);width:22px;border-radius:100px}
+.progress-dots i.done{background:var(--amber);opacity:.5}
+.q-step{text-align:center;padding:6px 4px 2px}
+.q-step .q-no{font-family:'Manrope',sans-serif;font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber)}
+.q-step h2{font-size:21px;margin:8px 0 18px}
+.opt-grid{display:flex;flex-direction:column;gap:10px}
+.opt-grid.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt-card{border:1.5px solid var(--line);background:var(--paper);border-radius:14px;padding:14px 16px;text-align:left;font-weight:700;font-size:14.5px;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.opt-card .opt-sub{display:block;font-weight:500;font-size:12px;color:var(--muted);margin-top:2px}
+.opt-card.on{border-color:var(--amber);background:var(--amber-soft)}
+.opt-card .check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line);flex:0 0 auto}
+.opt-card.on .check{background:var(--amber);border-color:var(--amber)}
+.wizard-nav{display:flex;gap:10px;margin-top:18px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;flex:1;padding:14px 16px;border-radius:12px;border:0;font-weight:700;font-size:14.5px}
+.btn-primary{background:var(--amber);color:#2a1e08}
+.btn-ghost{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+
+.result-hero{background:linear-gradient(165deg,var(--dark),#19141e);color:#fff;border-radius:var(--radius);padding:22px 20px;text-align:center;margin-bottom:14px}
+.result-hero .kicker{font-family:'Manrope',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber-soft);opacity:.95}
+.result-hero .big{font-family:'Playfair Display',serif;font-weight:700;font-size:28px;margin:8px 0 10px;color:#fff;line-height:1.2}
+.progress-bar{height:9px;border-radius:100px;background:rgba(255,255,255,.14);overflow:hidden;margin-bottom:6px}
+.progress-bar i{display:block;height:100%;background:linear-gradient(90deg,#c9922e,#efcf8c);border-radius:100px}
+.result-hero .sub{font-size:12.5px;color:#d9d0c4}
+
+.section-label{font-family:'Manrope',sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin:4px 0 10px}
+
+.err-card{border:1.5px solid var(--line);border-radius:16px;padding:14px 15px;margin-bottom:12px;background:var(--paper)}
+.err-card.priority{border-color:var(--amber);background:linear-gradient(180deg,var(--amber-soft),var(--paper) 40%)}
+.err-card.safety{border-color:var(--safety)}
+.err-card.done{opacity:.5}
+.err-card.done .err-title{text-decoration:line-through}
+.err-top{display:flex;align-items:flex-start;gap:10px}
+.err-top input[type=checkbox]{width:20px;height:20px;accent-color:var(--good);flex:0 0 auto;margin-top:2px}
+.err-body{flex:1}
+.err-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px}
+.badge{font-family:'Manrope',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-radius:100px;padding:2px 8px}
+.badge.cat{background:var(--amber-soft);color:#8a5e13}
+.badge.safety{background:var(--safety-soft);color:var(--safety)}
+.err-title{font-weight:700;font-size:15px;margin-bottom:4px}
+.err-why{font-size:11.5px;color:var(--amber);font-weight:600;margin-bottom:6px}
+.err-text{font-size:13px;color:var(--ink);line-height:1.55}
+.err-prevent{margin-top:8px;padding:8px 10px;background:var(--amber-soft);border-radius:10px;font-size:12px;color:#5c4111;line-height:1.5}
+.err-prevent b{color:#8a5e13}
+.err-safetynote{margin-top:8px;padding:9px 10px;background:var(--safety-soft);border:1px dashed var(--safety);border-radius:10px;font-size:11.5px;color:#5c1f1f;line-height:1.55}
+.err-safetynote b{color:var(--safety)}
+
+.consult-group{margin-bottom:6px}
+.consult-head{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:11px 2px;border-top:1px solid var(--line)}
+.consult-head:first-child{border-top:0}
+.consult-head h3{font-size:14.5px}
+.consult-head .arrow{color:var(--muted);transition:transform .15s}
+.consult-head.open .arrow{transform:rotate(90deg)}
+.consult-body{display:none;padding:4px 0 10px}
+.consult-body.open{display:block}
+
+.empty{text-align:center;color:var(--muted);font-size:14px;padding:30px 10px}
+.actions{display:flex;gap:10px;margin-top:4px}
+
+.disclaimer{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+.save-status{font-size:11px;color:var(--muted);text-align:center;margin-top:16px}
+
+@media print{
+  .wizard-nav,.actions{display:none}
+  body{background:#fff}
+  .card,.result-hero{box-shadow:none;border:1px solid #ddd}
+  .consult-body{display:block!important}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div id="header-photo"></div>
+  <div class="content">
+    <span class="kicker">✦ Tylko dla osób, które już kupiły ✦</span>
+    <h1>Diagnostyka <span class="serif-em">Twojego Remontu</span></h1>
+    <p>Które z 47 najczęstszych błędów możesz uniknąć, zanim wydasz pieniądze na darmo.</p>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<script>
+/* 47 błędów, tekst wiernie z bonusu „Najczęstsze błędy" (nic dodane, nic
+   wymyślone). tags = jakie warunki z profilu użytkowniczki czynią je istotnymi
+   dla WYNIKU/priorytetu (nie żeby je ukryć — aktywowana kategoria zostaje w
+   całości, widoczna do przejrzenia; wynik decyduje tylko o tym, co trafia do
+   TOP). safety:true = prawdziwe ostrzeżenie bezpieczeństwa — nigdy nie
+   zmniejszane przez poziom doświadczenia. */
+window.ERRORS = [
+ // A — Przygotowanie i bezpieczeństwo (zawsze istotne: "przed rozpoczęciem czegokolwiek")
+ {id:'a1',cat:'A',catLabel:'Przygotowanie i bezpieczeństwo',title:'Malowałaś bez gruntu',text:'Jeśli farba nie kryje równomiernie, nałóż teraz warstwę gruntu i pomaluj jeszcze raz na wierzch — nie dodawaj kolejnej warstwy samej farby, to nie pomoże.',prevent:'Przetestuj grunt na małym fragmencie, zanim pomalujesz całą ścianę, zwłaszcza na nowych lub porowatych powierzchniach.',tags:['malowanie']},
+ {id:'a2',cat:'A',catLabel:'Przygotowanie i bezpieczeństwo',title:'Pracowałaś bez zabezpieczenia podłogi',text:'Świeże plamy farby na parkiecie zetrzyj natychmiast wilgotną szmatką; dla zaschniętych plam użyj alkoholu izopropylowego, nie agresywnych rozpuszczalników.',prevent:'Zakryj podłogę folią/płachtą PRZED otwarciem farby, nie po pierwszej kapce.',tags:['malowanie','podloga']},
+ {id:'a3',cat:'A',catLabel:'Przygotowanie i bezpieczeństwo',title:'Używałaś narzędzi bez sprawdzenia napięcia w obwodzie',text:'Wyłącz bezpiecznik pokoju przed jakąkolwiek pracą blisko gniazdek lub kabli — żaden projekt z tego przewodnika nie jest wart ryzyka porażenia.',prevent:'Zasada, nie wyjątek: wyłącz bezpiecznik pokoju w rozdzielnicy przed dotknięciem jakiegokolwiek gniazdka lub kabla, każdy raz.',tags:['elektryka'],safety:true},
+ {id:'a4',cat:'A',catLabel:'Przygotowanie i bezpieczeństwo',title:'Nie wywietrzyłaś pokoju przy malowaniu/klejeniu',text:'Otwórz okno i włącz wentylator skierowany na zewnątrz — zapachy rozpuszczalnika rozwiewają się dużo szybciej, niż się wydaje.',prevent:'Otwórz okno i włącz wentylator PRZED otwarciem farby/kleju, nie po tym, jak poczujesz zapach.',tags:['malowanie','plytki'],safety:true},
+ {id:'a5',cat:'A',catLabel:'Przygotowanie i bezpieczeństwo',title:'Zmieszałaś różne środki chemiczne (chlor + inne roztwory)',text:'Nigdy nie mieszaj wybielacza z innymi środkami czyszczącymi — zatrzymaj się, natychmiast wywietrz pomieszczenie i nie kontynuuj mieszania.',prevent:'Nie trzymaj dwóch otwartych środków czyszczących w tym samym miejscu — przeczytaj etykietę przed użyciem, nie tylko wtedy, gdy już się pomyliłaś.',tags:[],safety:true},
+ {id:'a6',cat:'A',catLabel:'Przygotowanie i bezpieczeństwo',title:'Zaczęłaś duży projekt bez kupienia całego materiału na raz',text:'Kupuj 10-15% więcej każdego materiału z partii/odcienia (płytki, farba) — różne partie mają niewielkie różnice koloru.',prevent:'Oblicz dokładny metraż, a potem dodaj 10-15% do pierwszego zamówienia, nie wtedy, gdy Ci zabraknie.',tags:['plytki','malowanie']},
+ // B — Płytki, glazura i podłogi
+ {id:'b1',cat:'B',catLabel:'Płytki, glazura i podłogi',title:'Przykleiłaś panel PVC na mokrą ścianę',text:'Odklej natychmiast, poczekaj aż ściana całkowicie wyschnie przez 48 godzin, a potem przyklej ponownie — inaczej panel sam odpadnie w ciągu kilku tygodni.',prevent:'Sprawdź ręką (lub higrometrem), że ściana jest całkowicie sucha, przed przyklejeniem jakiegokolwiek panelu.',tags:['plytki']},
+ {id:'b2',cat:'B',catLabel:'Płytki, glazura i podłogi',title:'Przycięłaś folię/winyl za krótko',text:'Nie próbuj naciągać materiału — kup mały kawałek więcej i zakładaj 1-2 mm na szwie, tak jak przy tapecie.',prevent:'Zmierz powierzchnię i kup kawałek więcej, zanim zaczniesz wycinać — nie zgaduj idealnie od razu.',tags:['meble']},
+ {id:'b3',cat:'B',catLabel:'Płytki, glazura i podłogi',title:'Pod folią zostały bąbelki powietrza',text:'Przekłuj bąbelek cienką igłą i delikatnie wyciśnij powietrze raklą, od krawędzi w stronę nakłucia.',prevent:'Dociskaj od środka w stronę krawędzi raklą już w momencie klejenia, nie po tym, jak folia sama się ułoży.',tags:['meble']},
+ {id:'b4',cat:'B',catLabel:'Płytki, glazura i podłogi',title:'Zamontowałaś parkiet/SPC bez szczeliny dylatacyjnej przy ścianie',text:'Zdejmij listwę, przyciąj 8 mm z krawędzi podłogi, jeśli już jest zamontowana na styk, i zamontuj listwę ponownie na szczelinie.',prevent:'Zostaw 8-10 mm wolnej przestrzeni między podłogą a ścianą PRZED montażem, a potem zakryj listwą.',tags:['podloga']},
+ {id:'b5',cat:'B',catLabel:'Płytki, glazura i podłogi',title:'Fuga naprawcza nie przyczepiła się od razu',text:'Oczyść ponownie miejsce alkoholem, poczekaj aż całkowicie wyschnie, i nałóż cieńszą warstwę — powierzchnię trzeba było odtłuścić, nie tylko oczyścić z pyłu.',prevent:'Odtłuść miejsce alkoholem przed jakąkolwiek naprawą fugi, nie tylko zetrzyj pył.',tags:['plytki']},
+ {id:'b6',cat:'B',catLabel:'Płytki, glazura i podłogi',title:'Użyłaś zwykłej farby na płytkach balkonowych',text:'Odpadnie w ciągu kilku miesięcy — przeszlifuj lekko, oczyść, i nałóż specjalną farbę epoksydową zewnętrzną, jedyną odpowiednią na ruch pieszy i warunki atmosferyczne.',prevent:'Na płytkach zewnętrznych/balkonowych wybierz od razu farbę epoksydową — zwykła farba i tak tam nie wytrzyma.',tags:['plytki','malowanie']},
+ {id:'b7',cat:'B',catLabel:'Płytki, glazura i podłogi',title:'Nowo wylana fuga ma inny kolor niż resztę',text:'Partie fugi różnią się — zawsze testuj na małym, niewidocznym fragmencie przed zrobieniem całej fugi.',prevent:'Przetestuj fugę na małym, niewidocznym fragmencie, przed zrobieniem całej widocznej fugi.',tags:['plytki']},
+ {id:'b8',cat:'B',catLabel:'Płytki, glazura i podłogi',title:'Nowe płytki brzmią pusto, gdy na nie stajesz',text:'Jeśli się nie poruszyła ani nie popękała, to zwykle tylko mały bąbelek powietrza pod klejem, bez ryzyka — obserwuj, ale nie musisz jej wyjmować.',tags:['plytki']},
+ // C — Ściany i farba
+ {id:'c1',cat:'C',catLabel:'Ściany i farba',title:'Zostały widoczne pasy od wałka',text:"Poczekaj aż warstwa całkowicie wyschnie i nałóż jeszcze jedną cienką warstwę, ruchami w kształcie 'W' z wyrównaniem w pionie, bez zatrzymywania się na środku ściany.",prevent:"Nakładaj już od pierwszej warstwy ruchami w 'W' z wyrównaniem w pionie, nie tylko przy retuszu.",tags:['malowanie']},
+ {id:'c2',cat:'C',catLabel:'Ściany i farba',title:'Taśma malarska zabrała ze sobą farbę',text:'Retuszuj drobnym pędzlem dokładnie na uszkodzonej linii — nie próbuj przemalowywać całej ściany przez mały fragment.',tags:['malowanie']},
+ {id:'c3',cat:'C',catLabel:'Ściany i farba',title:'Tapeta samoprzylepna napęczniała w rogu',text:'Odklej uszkodzony róg, odtłuść ponownie ścianę pod nim, i przyklej ponownie, dociskając dobrze raklą — zwykle w tym miejscu ściana miała pył lub tłuszcz.',prevent:'Dobrze odtłuść ścianę przed klejeniem — pozostały pył lub tłuszcz to najczęstsza przyczyna.',tags:['malowanie']},
+ {id:'c4',cat:'C',catLabel:'Ściany i farba',title:'Pomalowałaś na plamie wilgoci bez gruntu izolującego',text:'Plama wróci w ciągu kilku tygodni, gwarantowane — zatrzymaj się, nałóż grunt izolujący przeciw plamom, a potem pomaluj jeszcze raz na wierzch.',prevent:'Sprawdź i usuń źródło wilgoci, zanim pomalujesz jakąkolwiek plamę wilgoci — grunt izolujący jest potem, nie zamiast tego.',safetyNote:'Zweryfikowane uzupełnienie: jeśli plama pochodzi z aktywnego problemu z wilgocią lub ma widoczną pleśń (nie tylko stary, suchy ślad), NIE zakrywaj jej od razu farbą lub gruntem — farba nie zabija pleśni, a plama może przebić się przez nową warstwę. Najpierw usuń źródło wilgoci i wyczyść pleśń, poczekaj aż powierzchnia całkowicie wyschnie, i tylko potem grunt izolujący i farba. Źródło: specjalistyczne przewodniki dotyczące usuwania wilgoci/pleśni (EPA i inne) — sprawdzone 2026-11-02.',tags:['malowanie'],safety:true},
+ {id:'c5',cat:'C',catLabel:'Ściany i farba',title:'Panel dekoracyjny 3D nie przykleił się równomiernie',text:'Podeprzyj go taśmą malarską minimum 24 godziny, nie tylko kilka godzin — klej montażowy potrzebuje tego czasu, żeby całkowicie się związać.',prevent:'Podpieraj panel taśmą malarską minimum 24 godziny od montażu, nie tylko kilka godzin z pośpiechu.',tags:['malowanie']},
+ {id:'c6',cat:'C',catLabel:'Ściany i farba',title:'Wybrany kolor wygląda inaczej na ścianie niż na próbce',text:'Zawsze testuj na powierzchni minimum 50x50 cm, w realnym świetle pokoju, przed pomalowaniem całej ściany.',prevent:'Przetestuj kolor na minimum 50x50 cm, w realnym świetle pokoju, PRZED zakupem ostatecznej ilości.',tags:['malowanie']},
+ {id:'c7',cat:'C',catLabel:'Ściany i farba',title:'Po kilku miesiącach od naprawy pojawiło się nowe pęknięcie',text:'Naprawa bez taśmy z włókna szklanego nie trzyma długoterminowo — zrób ją ponownie z taśmą pod warstwą gładzi, tym razem.',prevent:'Użyj taśmy z włókna szklanego pod gładzią już przy pierwszej naprawie, nie tylko przy drugiej próbie.',tags:['malowanie']},
+ // D — Meble
+ {id:'d1',cat:'D',catLabel:'Meble',title:'Farba na meblach odpadła w ciągu kilku tygodni',text:'Brakowało gruntu przyczepnego — przeszlifuj lekko, nałóż specjalny grunt do powierzchni lakierowanych, a potem pomaluj ponownie.',prevent:'Nałóż grunt przyczepny na każdą lakierowaną powierzchnię przed malowaniem, nie tylko gdy odpadnie po raz pierwszy.',tags:['meble']},
+ {id:'d2',cat:'D',catLabel:'Meble',title:'Winyl samoprzylepny nie przykleił się dobrze na rogach',text:'Delikatnie podgrzej róg suszarką do włosów przed dociśnięciem — zimny winyl pęka albo nie dopasowuje się do krawędzi.',prevent:'Delikatnie podgrzej rogi suszarką do włosów, przed dociśnięciem w tym miejscu winylu.',tags:['meble']},
+ {id:'d3',cat:'D',catLabel:'Meble',title:'Nowy uchwyt nie pasuje do starych otworów',text:'Wypełnij stare otwory kitem do drewna, poczekaj aż wyschnie, i zrób nowe otwory, używając kartonowego szablonu dla precyzji.',prevent:'Sprawdź dokładny odstęp między otworami nowego uchwytu a starymi, przed zamówieniem.',tags:['meble']},
+ {id:'d4',cat:'D',catLabel:'Meble',title:'Nowa noga mebla jest niestabilna',text:'Sprawdź, czy wszystkie cztery nogi mają dokładnie tę samą wysokość — różnica kilku milimetrów od razu odczuwalna jest przy stole.',prevent:'Sprawdź wysokość czterech nóg jedna przy drugiej przed montażem.',tags:['meble']},
+ {id:'d5',cat:'D',catLabel:'Meble',title:'Naprawiona szuflada wciąż się blokuje',text:'Jeśli parafina nie pomaga, problem jest pewnie w prowadnicy — sprawdź, czy jakaś śruba wystaje do wewnątrz szyny, i przykróć ją.',tags:['meble']},
+ {id:'d6',cat:'D',catLabel:'Meble',title:"Kolor farby kredowej (chalk paint) wygląda 'surowo', niewykończony",text:'Brakuje warstwy wosku lub matowego lakieru ochronnego — bez niego farba zostaje porowata i łatwo się brudzi.',prevent:'Nałóż warstwę wosku lub matowego lakieru ochronnego od razu po wyschnięciu farby, nie tylko gdy wygląda „surowo".',tags:['meble']},
+ // E — Łazienka i fugi
+ {id:'e1',cat:'E',catLabel:'Łazienka i fugi',title:'Nowy silikon zapleśniał w ciągu kilku tygodni',text:'Użyłaś zwykłego silikonu sanitarnego — usuń go i zrób ponownie specjalnym silikonem antygrzybicznym, jedynym odpowiednim przy wannie/kabinie.',prevent:'Wybierz od razu specjalny silikon antygrzybiczny do strefy prysznica/wanny, nie zwykły silikon sanitarny.',tags:['lazienka']},
+ {id:'e2',cat:'E',catLabel:'Łazienka i fugi',title:'Marker wybielający fugi nie utrzymał się',text:'Fuga nie była całkowicie sucha przy nakładaniu — oczyść ponownie, poczekaj minimum 2-3 godziny na całkowite wyschnięcie, a potem nałóż ponownie.',prevent:'Poczekaj minimum 2-3 godziny na całkowite wyschnięcie fugi przed nakładaniem, nie tylko „suche na oko".',tags:['lazienka']},
+ {id:'e3',cat:'E',catLabel:'Łazienka i fugi',title:'Za panelem PVC pojawiła się kondensacja',text:'Sprawdź, czy wentylacja łazienki działa — panel nie powoduje kondensacji, tylko czyni ją widoczną później, jeśli problem już istniał.',prevent:'Sprawdź wentylację łazienki przed montażem — nowy panel nie naprawi wentylacji, która już nie działa.',tags:['lazienka']},
+ {id:'e4',cat:'E',catLabel:'Łazienka i fugi',title:'Nowa gumowa uszczelka nie pasuje idealnie',text:'Sprawdź dokładny profil kabiny (zdjęcie zrobione przed demontażem) — istnieje kilka standardowych szerokości, łatwo je pomylić.',prevent:'Zrób zdjęcie dokładnego profilu kabiny PRZED demontażem, jako bezpieczny punkt odniesienia przy kupowaniu.',tags:['lazienka']},
+ {id:'e5',cat:'E',catLabel:'Łazienka i fugi',title:'Ponownie uszczelniona umywalka wciąż ma mały przeciek',text:'Silikon potrzebuje 24 godzin całkowicie suchych, bez wody — jeśli został zmoczony wcześniej, uszczelnienie nie stwardniało prawidłowo, zrób ponownie.',prevent:'Poczekaj 24 godziny, aż silikon całkowicie wyschnie, bez kontaktu z wodą, przed pierwszym użyciem.',tags:['lazienka']},
+ {id:'e6',cat:'E',catLabel:'Łazienka i fugi',title:'Kolorowa farba do fug rozlała się na glazurę',text:'Zetrzyj natychmiast wilgotną szmatką, zanim zaschnie; jeśli już zaschła, użyj alkoholu izopropylowego, najpierw na niewidocznym fragmencie.',prevent:'Pracuj z wilgotną szmatką pod ręką już w trakcie nakładania, nie dopiero po tym, jak poplamisz glazurę.',tags:['lazienka']},
+ // F — Elektryka i oświetlenie
+ {id:'f1',cat:'F',catLabel:'Elektryka i oświetlenie',title:'Nowy żyrandol nie zapala się po montażu',text:'Sprawdź ponownie zdjęcie starego okablowania — najczęściej przewód neutralny i fazowy są odwrócone względem pierwotnej pozycji.',prevent:'Zrób zdjęcie starego okablowania PRZED demontażem, jako punkt odniesienia — ale samo zdjęcie nie potwierdza bezpiecznego podłączenia, zobacz uzupełnienie poniżej.',safetyNote:'Uzupełnienie bezpieczeństwa: zdjęcie starego okablowania NIE jest wystarczającym punktem odniesienia i nie gwarantuje bezpiecznego podłączenia — pokazuje tylko, jak wyglądało wcześniej, nie czy było prawidłowe lub czy obwód jest teraz pod napięciem. Prace przy okablowaniu elektrycznym wymagają: całkowitego odłączenia obwodu (bezpiecznik wyłączony w rozdzielnicy) i sprawdzenia BRAKU napięcia — ta weryfikacja musi być wykonana przez kompetentną osobę, odpowiednim przyrządem, nie na oko. Jeśli coś nie jest jasne albo nie jesteś 100% pewna każdego kroku, wezwij uprawnionego elektryka — nie kontynuuj montażu „na podstawie zdjęcia", jeśli pojawi się jakakolwiek niejasność.',tags:['elektryka'],safety:true},
+ {id:'f2',cat:'F',catLabel:'Elektryka i oświetlenie',title:'Taśma LED nie zapala się od połowy',text:'Taśma została przycięta poza oznaczonymi punktami — zawsze przycinaj dokładnie na liniach wskazanych przez producenta, nie gdziekolwiek.',prevent:'Sprawdź linie przycinania oznaczone przez producenta przed przycięciem, nie na oko.',tags:['elektryka']},
+ {id:'f3',cat:'F',catLabel:'Elektryka i oświetlenie',title:'Czujnik ruchu uruchamia się fałszywo, cały czas',text:'Zmniejsz czułość śrubą regulacyjną, albo przenieś go dalej od źródeł ciepłego powietrza (kaloryfer, wentylacja).',prevent:'Zamontuj czujnik od razu daleko od kaloryfera/wentylacji — późniejsze przesunięcie jest trudniej dostępne.',tags:['elektryka']},
+ {id:'f4',cat:'F',catLabel:'Elektryka i oświetlenie',title:'Kupione żarówki nie dają tego samego światła wszędzie',text:'Sprawdź temperaturę barwową na opakowaniu (K) — mieszanie 3000K z 4000K w tym samym pokoju widać od razu.',prevent:'Sprawdź temperaturę barwową (K) na wszystkich żarówkach PRZED kupieniem ich do tego samego pokoju.',tags:['elektryka']},
+ {id:'f5',cat:'F',catLabel:'Elektryka i oświetlenie',title:'Zamontowałaś sprzęt AGD/oprawę bez wyłączenia bezpiecznika',text:'Zatrzymaj się natychmiast, wyłącz bezpiecznik pokoju w rozdzielnicy, i kontynuuj tylko potem — żaden projekt nie jest wart tego ryzyka.',tags:['elektryka'],safety:true},
+ // G — Wynajem i odwracalność
+ {id:'g1',cat:'G',catLabel:'Wynajem i odwracalność',title:'Przykleiłaś coś na stałe bez pytania właściciela',text:'Zawsze sprawdź umowę wcześniej — większość rozwiązań z tego przewodnika jest odwracalna, ale niektóre (farba na ścianie) nie są.',prevent:'Zawsze sprawdź umowę wynajmu PRZED przyklejeniem czegoś na stałe.',tags:['wynajem']},
+ {id:'g2',cat:'G',catLabel:'Wynajem i odwracalność',title:'Wierciłaś w ścianach pod półki bez zgody właściciela',text:'Użyj wariantów z przemysłową taśmą dwustronną z tego przewodnika — kilka małych otworów zwykle nie ma znaczenia, ale i tak sprawdź.',prevent:'Zapytaj właściciela albo wybierz od razu przemysłową taśmę dwustronną, nie tylko gdy pojawi się problem.',tags:['wynajem']},
+ {id:'g3',cat:'G',catLabel:'Wynajem i odwracalność',title:"Nie zrobiłaś zdjęć 'przed' przy wprowadzce",text:'Sfotografuj każdy pokój z kilku kątów pierwszego dnia — to Twój dowód, jeśli pojawi się jakiś spór na koniec umowy.',prevent:'Sfotografuj każdy pokój z kilku kątów już pierwszego dnia wprowadzki.',tags:['wynajem']},
+ {id:'g4',cat:'G',catLabel:'Wynajem i odwracalność',title:'Nałożyłaś folię/winyl, która przy odklejaniu zostawiła ślady',text:'Użyj lekkiego ciepła (suszarka do włosów) przy odklejaniu, powoli, i natychmiast wyczyść ślady kleju alkoholem izopropylowym.',prevent:'Przetestuj na małym rogu, jak odkleja się folia, przed nałożeniem jej na całą powierzchnię.',tags:['wynajem']},
+ {id:'g5',cat:'G',catLabel:'Wynajem i odwracalność',title:'Nie zachowałaś dowodu użytych odwracalnych materiałów',text:'Zachowaj paragony i zdjęcia z etapów montażu — pokazują jasno właścicielowi, że ingerencja nie wpłynęła na strukturę.',prevent:'Zachowuj paragony już w trakcie projektu, nie dopiero na końcu.',tags:['wynajem']},
+ // H — Budżet i zakupy (zawsze istotne)
+ {id:'h1',cat:'H',catLabel:'Budżet i zakupy',title:'Kupiłaś dokładnie potrzebny metraż, bez rezerwy',text:'Zawsze dodawaj 10-15% do każdego przycinanego materiału (folia, płytki, winyl) — błędne przycięcia są nieuniknione nawet u doświadczonych.',prevent:'Dodaj 10-15% do każdego przycinanego materiału już w pierwszym zamówieniu.',tags:['budzet']},
+ {id:'h2',cat:'H',catLabel:'Budżet i zakupy',title:'Kupiłaś materiały z różnych partii',text:'Sprawdź numer partii na opakowaniu przed kupnem — zwłaszcza przy farbie i płytkach, różne partie mają widoczne różnice odcienia.',prevent:'Sprawdź numer partii na opakowaniu przed kupieniem całej potrzebnej ilości.',tags:['budzet']},
+ {id:'h3',cat:'H',catLabel:'Budżet i zakupy',title:'Wybrałaś najtańszy klej/silikon do strefy mokrej',text:'W łazience i kuchni różnica w cenie między zwykłym silikonem a antygrzybicznym jest mała — ale różnica w trwałości to lata.',prevent:'W łazience i kuchni wybierz od razu wariant antygrzybiczny przy kupnie — różnica w cenie jest mała.',tags:['budzet','lazienka']},
+ {id:'h4',cat:'H',catLabel:'Budżet i zakupy',title:'Nie sprawdziłaś recenzji przed dużym zamówieniem online',text:'Przy pokrowcach na kanapę, meblach lub czymkolwiek z krytycznymi wymiarami, zawsze sprawdzaj recenzje z prawdziwymi zdjęciami, nie tylko oficjalne zdjęcie produktu.',prevent:'Sprawdź recenzje z prawdziwymi zdjęciami przed każdym zamówieniem online z krytycznymi wymiarami.',tags:['budzet']}
+];
+
+window.HEADER_PHOTO = null; // bez własnego zdjęcia podesłanego jeszcze dla Polski — użyje degradowanego tła
+
+window.isTagRelevant = (tag, p) => {
+  if (tag==='malowanie') return p.transf.includes('malowanie');
+  if (tag==='plytki') return p.transf.includes('plytki');
+  if (tag==='podloga') return p.transf.includes('podloga');
+  if (tag==='meble') return p.transf.includes('meble');
+  if (tag==='elektryka') return p.transf.includes('elektryka');
+  if (tag==='lazienka') return p.ambient==='lazienka' || p.transf.includes('lazienka');
+  if (tag==='wynajem') return p.locuinta==='wynajem';
+  if (tag==='budzet') return p.buget==='napiety';
+  return false;
+};
+
+window.TAG_REASON = {
+  malowanie:'bo zaznaczyłaś malowanie ścian',
+  plytki:'bo zaznaczyłaś płytki/glazurę',
+  podloga:'bo zaznaczyłaś montaż podłogi',
+  meble:'bo zaznaczyłaś nowe meble',
+  elektryka:'bo zaznaczyłaś elektrykę/oświetlenie',
+  lazienka:'bo pracujesz w łazience',
+  wynajem:'bo mieszkasz na wynajem',
+  budzet:'bo powiedziałaś, że budżet jest napięty'
+};
+</script>
+
+<script>
+(() => {
+'use strict';
+const ERRORS = window.ERRORS, isTagRelevant = window.isTagRelevant, TAG_REASON = window.TAG_REASON;
+const KEY = 'remont-rozwiazany:diagnostyka-remontu:v1';
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CAT_ORDER = ['A','H','C','B','D','E','F','G'];
+
+const QUESTIONS = [
+  { id:'locuinta', title:'Jaki masz rodzaj mieszkania?', type:'single', options:[
+    { v:'wlasnosc', label:'Własność' }, { v:'wynajem', label:'Wynajem' }
+  ]},
+  { id:'ambient', title:'Jakie jest główne pomieszczenie?', type:'single', grid:true, options:[
+    { v:'kuchnia', label:'Kuchnia' }, { v:'lazienka', label:'Łazienka' },
+    { v:'sypialnia', label:'Sypialnia' }, { v:'salon', label:'Salon' },
+    { v:'przedpokoj', label:'Przedpokój / Hol' }, { v:'biuro', label:'Biuro' }
+  ]},
+  { id:'transf', title:'Jakie zmiany planujesz?', sub:'Możesz wybrać kilka.', type:'multi', options:[
+    { v:'malowanie', label:'Malowanie ścian' }, { v:'plytki', label:'Płytki / glazura' },
+    { v:'podloga', label:'Podłoga' }, { v:'meble', label:'Nowe meble' },
+    { v:'elektryka', label:'Elektryka / oświetlenie' }, { v:'lazienka', label:'Łazienka / fugi' }
+  ]},
+  { id:'experienta', title:'Twoje doświadczenie DIY?', type:'single', options:[
+    { v:'poczatkujaca', label:'Początkująca', sub:'Mój pierwszy poważny projekt' },
+    { v:'z-doswiadczeniem', label:'Miałam już kilka projektów', sub:'Radzę sobie z domowymi sprawami' },
+    { v:'doswiadczona', label:'Doświadczona', sub:'Remontuję często, znam się na narzędziach' }
+  ]},
+  { id:'buget', title:'Budżet na ten projekt?', type:'single', options:[
+    { v:'napiety', label:'Napięty', sub:'Każda złotówka się liczy' },
+    { v:'sredni', label:'Średni', sub:'Mam margines, ale nie nieograniczony' },
+    { v:'swobodny', label:'Swobodny', sub:'Priorytet na wynik, nie na cenę' }
+  ]}
+];
+
+function initial(){
+  return { step:0, done:false, profile:{ locuinta:null, ambient:null, transf:[], experienta:null, buget:null }, checked:{}, openGroups:{} };
+}
+let state = initial(), storageOK = true;
+
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); storageOK = true; }
+  catch(_) { storageOK = false; }
+  document.querySelectorAll('[data-save]').forEach(el => el.textContent = saveText());
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (!parsed) return;
+    state = Object.assign(initial(), {
+      step: Number.isInteger(parsed.step) ? parsed.step : 0,
+      done: parsed.done === true,
+      profile: {
+        locuinta: ['wlasnosc','wynajem'].includes(parsed.profile?.locuinta) ? parsed.profile.locuinta : null,
+        ambient: QUESTIONS[1].options.some(o=>o.v===parsed.profile?.ambient) ? parsed.profile.ambient : null,
+        transf: Array.isArray(parsed.profile?.transf) ? parsed.profile.transf.filter(t => QUESTIONS[2].options.some(o=>o.v===t)) : [],
+        experienta: ['poczatkujaca','z-doswiadczeniem','doswiadczona'].includes(parsed.profile?.experienta) ? parsed.profile.experienta : null,
+        buget: ['napiety','sredni','swobodny'].includes(parsed.profile?.buget) ? parsed.profile.buget : null
+      },
+      checked: (parsed.checked && typeof parsed.checked==='object') ? parsed.checked : {},
+      openGroups: (parsed.openGroups && typeof parsed.openGroups==='object') ? parsed.openGroups : {}
+    });
+  } catch(_) { storageOK = false; }
+}
+const saveText = () => storageOK
+  ? 'Zapisano automatycznie na tym urządzeniu.'
+  : 'Zapis lokalny nie jest dostępny w tej przeglądarce — wybory zostaną utracone po zamknięciu.';
+
+/* ---- diagnostyka: jakie kategorie są aktywne, indywidualny wynik dla każdego
+   błędu, top priorytetowy (unia z WSZYSTKIM, co jest bezpieczeństwem), resztę
+   do przejrzenia ---- */
+function buildDiagnostic(){
+  const p = state.profile;
+  const relevant = ERRORS.filter(e => e.cat==='A' || e.cat==='H' || e.tags.some(t => isTagRelevant(t,p)));
+  const scored = relevant.map(e => {
+    let score = 0; let matchedTag = null;
+    e.tags.forEach(t => {
+      if (isTagRelevant(t,p)) { score += 3; if (!matchedTag) matchedTag = t; }
+    });
+    if (e.safety) score += 5;
+    if (!e.safety) {
+      if (p.experienta==='poczatkujaca') score += 1;
+      if (p.experienta==='doswiadczona') score -= 1;
+    }
+    return { e, score: Math.max(score,0), matchedTag };
+  });
+  scored.sort((a,b) => b.score-a.score);
+  const TARGET = 6;
+  const safetyAll = scored.filter(s => s.e.safety);
+  const nonSafetyTop = scored.filter(s => !s.e.safety && s.score>0);
+  const remainingSlots = Math.max(TARGET - safetyAll.length, 0);
+  const priority = [...safetyAll, ...nonSafetyTop.slice(0,remainingSlots)].sort((a,b) => b.score-a.score);
+  const priorityIds = new Set(priority.map(s=>s.e.id));
+  const activeCats = CAT_ORDER.filter(c => relevant.some(e => e.cat===c));
+  const restByCat = {};
+  activeCats.forEach(c => { restByCat[c] = relevant.filter(e => e.cat===c && !priorityIds.has(e.id)); });
+  return { activeCats, relevant, priority, restByCat };
+}
+
+function renderDots(){
+  const total = QUESTIONS.length;
+  return `<div class="progress-dots">${QUESTIONS.map((_,i) => `<i class="${i===state.step?'on':(i<state.step?'done':'')}"></i>`).join('')}</div>`;
+}
+
+function renderWizard(){
+  const q = QUESTIONS[state.step];
+  const val = state.profile[q.id];
+  const isOn = opt => q.type==='multi' ? val.includes(opt.v) : val===opt.v;
+  const canNext = q.type==='multi' ? true : val !== null;
+  return `${renderDots()}
+  <div class="card q-step">
+    <span class="q-no">Pytanie ${state.step+1} z ${QUESTIONS.length}</span>
+    <h2>${esc(q.title)}</h2>
+    ${q.sub?`<p style="color:var(--muted);font-size:12.5px;margin:-12px 0 16px">${esc(q.sub)}</p>`:''}
+    <div class="opt-grid ${q.grid?'grid2':''}">
+      ${q.options.map(o => `<button class="opt-card ${isOn(o)?'on':''}" data-opt="${o.v}" data-qid="${q.id}" data-qtype="${q.type}">
+        <span>${esc(o.label)}${o.sub?`<span class="opt-sub">${esc(o.sub)}</span>`:''}</span>
+        <span class="check"></span>
+      </button>`).join('')}
+    </div>
+    <div class="wizard-nav">
+      ${state.step>0?`<button class="btn btn-ghost" data-wiz-back>← Wstecz</button>`:''}
+      <button class="btn btn-primary" data-wiz-next ${canNext?'':'disabled style="opacity:.4"'}>${state.step===QUESTIONS.length-1?'Zobacz diagnozę →':'Dalej →'}</button>
+    </div>
+  </div>`;
+}
+
+function renderErrCard(entry, isPriority){
+  const e = entry.e;
+  const key = e.id;
+  const done = state.checked[key] === true;
+  const reason = entry.matchedTag ? TAG_REASON[entry.matchedTag] : (e.safety ? 'to realne ryzyko bezpieczeństwa przy każdym remoncie' : 'dotyczy każdego projektu remontowego');
+  return `<div class="err-card ${isPriority?'priority':''} ${e.safety?'safety':''} ${done?'done':''}">
+    <div class="err-top">
+      <input type="checkbox" data-check="${key}" ${done?'checked':''}>
+      <div class="err-body">
+        <div class="err-badges"><span class="badge cat">${esc(e.catLabel)}</span>${e.safety?'<span class="badge safety">Bezpieczeństwo</span>':''}</div>
+        <div class="err-title">${esc(e.title)}</div>
+        ${isPriority?`<div class="err-why">Dotyczy Ciebie ${esc(reason)}</div>`:''}
+        <div class="err-text">${esc(e.text)}</div>
+        ${e.prevent?`<div class="err-prevent"><b>Jak zapobiec:</b> ${esc(e.prevent)}</div>`:''}
+        ${e.safetyNote?`<div class="err-safetynote"><b>Sprawdzone technicznie:</b> ${esc(e.safetyNote)}</div>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderResult(){
+  const d = buildDiagnostic();
+  const allIds = d.relevant.map(e=>e.id);
+  const doneCount = allIds.filter(id => state.checked[id]).length;
+  const pct = allIds.length ? Math.round(doneCount/allIds.length*100) : 0;
+
+  return `<div class="result-hero">
+    <span class="kicker">Twój postęp</span>
+    <div class="big">${pct}%</div>
+    <div class="progress-bar"><i style="width:${pct}%"></i></div>
+    <p class="sub">${d.relevant.length} błędów istotnych dla Twojego profilu · ${d.priority.length} priorytetowych</p>
+  </div>
+  <div class="card">
+    <div class="section-label">Najważniejsze dla Ciebie</div>
+    ${d.priority.map(entry => renderErrCard(entry, true)).join('')}
+  </div>
+  <div class="card">
+    <div class="section-label">Do przejrzenia — pozostałe istotne błędy</div>
+    ${d.activeCats.filter(c => d.restByCat[c].length).map(c => {
+      const open = state.openGroups[c] === true;
+      return `<div class="consult-group">
+        <div class="consult-head ${open?'open':''}" data-toggle-group="${c}">
+          <h3>${esc(d.restByCat[c][0].catLabel)} <span style="color:var(--muted);font-weight:500">(${d.restByCat[c].length})</span></h3>
+          <span class="arrow">›</span>
+        </div>
+        <div class="consult-body ${open?'open':''}">
+          ${d.restByCat[c].map(e => renderErrCard({e,matchedTag:null}, false)).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost" data-modifica>← Zmień odpowiedzi</button>
+    <button class="btn btn-primary" data-print>Zapisz jako PDF</button>
+  </div>
+  <p class="disclaimer">To przewodnik informacyjny bazujący na częstych błędach remontowych — nie jest to profesjonalna ocena techniczna. Przy pracach elektrycznych lub konstrukcyjnych, których nie jesteś pewna, wezwij uprawnionego elektryka/fachowca.</p>`;
+}
+
+function render(){
+  const main = document.getElementById('main');
+  const scrollY = window.scrollY;
+  main.innerHTML = (state.done ? renderResult() : renderWizard())
+    + `<p class="save-status" data-save>${saveText()}</p>`;
+
+  main.querySelectorAll('[data-opt]').forEach(btn => btn.onclick = () => {
+    const qid = btn.dataset.qid, qtype = btn.dataset.qtype, v = btn.dataset.opt;
+    if (qtype==='multi') {
+      const arr = state.profile[qid];
+      const idx = arr.indexOf(v);
+      if (idx>=0) arr.splice(idx,1); else arr.push(v);
+    } else {
+      state.profile[qid] = v;
+    }
+    save(); render();
+  });
+  const nextBtn = main.querySelector('[data-wiz-next]');
+  if (nextBtn) nextBtn.onclick = () => {
+    const q = QUESTIONS[state.step];
+    if (q.type!=='multi' && state.profile[q.id]===null) return;
+    if (state.step < QUESTIONS.length-1) state.step++;
+    else state.done = true;
+    save(); render(); window.scrollTo({top:0,behavior:'smooth'});
+  };
+  const backBtn = main.querySelector('[data-wiz-back]');
+  if (backBtn) backBtn.onclick = () => { state.step--; save(); render(); window.scrollTo({top:0,behavior:'smooth'}); };
+  const modBtn = main.querySelector('[data-modifica]');
+  if (modBtn) modBtn.onclick = () => { state.done = false; state.step = 0; save(); render(); window.scrollTo({top:0,behavior:'smooth'}); };
+  const printBtn = main.querySelector('[data-print]');
+  if (printBtn) printBtn.onclick = () => window.print();
+
+  main.querySelectorAll('[data-check]').forEach(cb => cb.onchange = () => {
+    if (cb.checked) state.checked[cb.dataset.check] = true; else delete state.checked[cb.dataset.check];
+    save();
+    cb.closest('.err-card').classList.toggle('done', cb.checked);
+    const d = buildDiagnostic();
+    const allIds = d.relevant.map(e=>e.id);
+    const doneCount = allIds.filter(id => state.checked[id]).length;
+    const pct = allIds.length ? Math.round(doneCount/allIds.length*100) : 0;
+    const pctEl = document.querySelector('.result-hero .big');
+    const barEl = document.querySelector('.progress-bar i');
+    if (pctEl && barEl) { pctEl.textContent = pct+'%'; barEl.style.width = pct+'%'; }
+  });
+  main.querySelectorAll('[data-toggle-group]').forEach(h => h.onclick = () => {
+    const c = h.dataset.toggleGroup;
+    state.openGroups[c] = !state.openGroups[c];
+    save(); render();
+  });
+
+  window.scrollTo({top:scrollY});
+}
+
+function renderHeaderPhoto(){
+  const el = document.getElementById('header-photo');
+  if (window.HEADER_PHOTO) el.innerHTML = `<img class="photo" src="${window.HEADER_PHOTO}" alt="">`;
+  else el.innerHTML = `<div class="photo-fallback"></div>`;
+}
+
+load();
+renderHeaderPhoto();
+render();
+})();
+</script>
+</body>
+</html>
